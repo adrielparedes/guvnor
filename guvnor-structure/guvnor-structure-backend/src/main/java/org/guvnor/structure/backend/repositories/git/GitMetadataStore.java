@@ -53,8 +53,7 @@ public class GitMetadataStore {
         String repositoryName = repository.getAlias();
         String path = buildPath( owner, repositoryName );
 
-        final GitMetadata metadata = new GitMetadata();
-
+        GitMetadata metadata = new GitMetadata();
         metadata.setRepositoryName( repositoryName );
         metadata.setOwner( owner );
 
@@ -62,10 +61,10 @@ public class GitMetadataStore {
 
     }
 
-    public GitMetadata read( String gitRepository,
+    public GitMetadata read( Repository repository,
                              OrganizationalUnit organizationalUnit ) {
         String owner = getOwner( organizationalUnit );
-        String repositoryName = "";
+        String repositoryName = repository.getAlias();
         String path = buildPath( owner, repositoryName );
         return this.storage.read( path );
     }
@@ -90,7 +89,7 @@ public class GitMetadataStore {
 
     private String buildPath( final String owner,
                               final String repositoryName ) {
-        return owner + "/" + repositoryName;
+        return "/" + owner + "/" + repositoryName;
     }
 
 }
