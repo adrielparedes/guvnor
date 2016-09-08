@@ -30,7 +30,7 @@ public class GitMetadataStore {
 
     private Logger logger = LoggerFactory.getLogger( GitMetadataStore.class );
 
-    public static final String METADATA = "default://metadata";
+    public static final String METADATA = "default://system/metadata";
 
     private ObjectStorage storage;
 

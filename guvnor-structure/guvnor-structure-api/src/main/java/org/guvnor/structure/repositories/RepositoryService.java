@@ -51,12 +51,12 @@ public interface RepositoryService {
      */
     Collection<Repository> getRepositories();
 
-    Repository createRepository( final OrganizationalUnit organizationalUnit,
-                                 final String scheme,
+    Repository createRepository( final String scheme,
                                  final String alias,
                                  final RepositoryEnvironmentConfigurations configurations ) throws RepositoryAlreadyExistsException;
 
-    Repository createRepository( final String scheme,
+    Repository createRepository( final OrganizationalUnit organizationalUnit,
+                                 final String scheme,
                                  final String alias,
                                  final RepositoryEnvironmentConfigurations configurations ) throws RepositoryAlreadyExistsException;
 

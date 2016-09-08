@@ -1,0 +1,87 @@
+<!--
+  ~ Copyright 2016 Red Hat, Inc. and/or its affiliates.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+             xmlns:kie="urn:import:org.uberfire.ext.widgets.common.client.common.popups"
+>
+
+  <ui:with field="i18n" type="org.uberfire.ext.widgets.core.client.resources.i18n.CoreConstants"/>
+  <ui:with field="commoni18n" type="org.guvnor.structure.client.resources.i18n.CommonConstants"/>
+
+  <g:HTMLPanel>
+    <kie:BaseModal ui:field="popup" title="{i18n.ForkRepository}" dataBackdrop="STATIC" dataKeyboard="true" fade="true">
+      <b:ModalBody>
+        <b:Form type="HORIZONTAL">
+          <b:FieldSet>
+            <b:Legend>
+              <ui:text from="{i18n.RepoInformation}"/>
+            </b:Legend>
+
+            <b:FormGroup ui:field="sourceOrganizationalUnitGroup">
+              <b:FormLabel ui:field="sourceOrganizationalUnitLabel" for="ou" showRequiredIndicator="true" addStyleNames="col-md-4">
+                <ui:text from="{i18n.SourceOrganizationalUnit}"/>
+              </b:FormLabel>
+              <b:Column size="MD_8">
+                <b:TextBox b:id="ou" ui:field="sourceOrganizationalUnitTextBox"/>
+                <!--<b:HelpBlock ui:field="sourceOrganizationalUnitHelpInline"/>-->
+              </b:Column>
+            </b:FormGroup>
+
+            <b:FormGroup ui:field="repositoryGroup">
+              <b:FormLabel ui:field="repositoryLabel" for="ou" showRequiredIndicator="true" addStyleNames="col-md-4">
+                <ui:text from="{i18n.Repository}"/>
+              </b:FormLabel>
+              <b:Column size="MD_8">
+                <b:TextBox b:id="ou" ui:field="repositoryTextBox"/>
+                <!--<b:HelpBlock ui:field="repositoryHelpInline"/>-->
+              </b:Column>
+            </b:FormGroup>
+
+            <b:FormGroup ui:field="targetOrganizationalUnitGroup">
+              <b:FormLabel ui:field="targetOrganizationalUnitLabel" for="ou" showRequiredIndicator="true" addStyleNames="col-md-4">
+                <ui:text from="{i18n.TargetOrganizationalUnit}"/>
+              </b:FormLabel>
+              <b:Column size="MD_8">
+                <b:TextBox b:id="ou" ui:field="targetOrganizationalUnitTextBox"/>
+                <!--<b:HelpBlock ui:field="targetOrganizationalUnitHelpInline"/>-->
+              </b:Column>
+            </b:FormGroup>
+
+            <b:FormGroup ui:field="managedReposiotryGroup">
+              <b:FormLabel for="managedRepository" addStyleNames="col-md-4">
+                <ui:text from="{commoni18n.ManagedRepository}"/>
+              </b:FormLabel>
+              <b:Column size="MD_8">
+                <b:CheckBox ui:field="managedRepository"/>
+              </b:Column>
+            </b:FormGroup>
+          </b:FieldSet>
+        </b:Form>
+      </b:ModalBody>
+      <b:ModalFooter>
+        <b:Button type="DEFAULT" ui:field="cancel">
+          <ui:text from="{i18n.Cancel}"/>
+        </b:Button>
+        <b:Button icon="CLOUD_DOWNLOAD" type="PRIMARY" ui:field="fork">
+          <ui:text from="{i18n.Fork}"/>
+        </b:Button>
+      </b:ModalFooter>
+    </kie:BaseModal>
+  </g:HTMLPanel>
+</ui:UiBinder> 

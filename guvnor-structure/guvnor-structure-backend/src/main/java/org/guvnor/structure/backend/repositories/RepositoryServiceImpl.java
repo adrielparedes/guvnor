@@ -219,8 +219,11 @@ public class RepositoryServiceImpl implements RepositoryService {
                                         final RepositoryEnvironmentConfigurations repositoryEnvironmentConfigurations ) throws RepositoryAlreadyExistsException {
 
         try {
+
+            final String finalAlias = this.getGroup( alias, organizationalUnit, repositoryEnvironmentConfigurations );
+
             final Repository repository = createRepository( scheme,
-                                                            alias,
+                                                            finalAlias,
                                                             repositoryEnvironmentConfigurations );
             if ( organizationalUnit != null && repository != null ) {
                 organizationalUnitService.addRepository( organizationalUnit, repository );
@@ -230,6 +233,16 @@ public class RepositoryServiceImpl implements RepositoryService {
         } catch ( final Exception e ) {
             logger.error( "Error during create repository", e );
             throw ExceptionUtilities.handleException( e );
+        }
+    }
+
+    private String getGroup( final String alias,
+                             final OrganizationalUnit organizationalUnit,
+                             final RepositoryEnvironmentConfigurations env ) {
+        if ( organizationalUnit != null ) {
+            return organizationalUnit.getName() + "/" + alias;
+        } else {
+            return env.getUserName() + "/" + alias;
         }
     }
 

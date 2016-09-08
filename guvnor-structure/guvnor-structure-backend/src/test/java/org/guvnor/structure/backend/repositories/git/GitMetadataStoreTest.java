@@ -26,9 +26,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.server.io.object.ObjectStorage;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,7 +54,7 @@ public class GitMetadataStoreTest {
     @Test
     public void testStorageInitialization() {
         metadataStore.init();
-        verify( storage ).init( eq( "default://metadata" ) );
+        verify( storage ).init( eq( "default://system/metadata" ) );
     }
 
     @Test

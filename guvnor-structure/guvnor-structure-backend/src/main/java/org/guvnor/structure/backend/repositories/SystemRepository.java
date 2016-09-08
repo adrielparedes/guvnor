@@ -57,7 +57,7 @@ public class SystemRepository extends GitRepository {
 
     @Override
     public String getUri() {
-        return getScheme() + "://" + getAlias();
+        return getScheme() + "://system/" + getAlias();
     }
 
     @Override
