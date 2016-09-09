@@ -16,23 +16,28 @@
 
 package org.guvnor.structure.repositories;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class GitMetadata {
 
-    private String repositoryName;
+    private String origin;
+    private List<String> forks;
+    private String name;
     private String owner;
 
     public GitMetadata() {
     }
 
-    public void setRepositoryName( final String repositoryName ) {
-        this.repositoryName = repositoryName;
+    public void setName( final String name ) {
+        this.name = name;
     }
 
-    public String getRepositoryName() {
-        return repositoryName;
+    public String getName() {
+        return name;
     }
 
     public void setOwner( final String owner ) {
@@ -41,5 +46,28 @@ public class GitMetadata {
 
     public String getOwner() {
         return owner;
+    }
+
+    public List<String> getForks() {
+        if ( this.forks == null ) {
+            this.forks = new ArrayList<>();
+        }
+        return forks;
+    }
+
+    public void setForks( final List<String> forks ) {
+        this.forks = forks;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin( final String origin ) {
+        this.origin = origin;
+    }
+
+    public void addFork( final String name ) {
+        this.getForks().add( name );
     }
 }

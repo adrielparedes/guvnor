@@ -27,7 +27,6 @@ import javax.inject.Named;
 
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.structure.backend.backcompat.BackwardCompatibleUtil;
-import org.guvnor.structure.backend.repositories.git.GitMetadataStore;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.NewRepositoryEvent;
@@ -72,8 +71,8 @@ public class RepositoryServiceImpl implements RepositoryService {
     @Named("ioStrategy")
     private IOService ioService;
 
-    @Inject
-    private GitMetadataStore metadataStore;
+//    @Inject
+//    private GitMetadataStore metadataStore;
 
     @Inject
     private ConfigurationService configurationService;
@@ -228,7 +227,7 @@ public class RepositoryServiceImpl implements RepositoryService {
             if ( organizationalUnit != null && repository != null ) {
                 organizationalUnitService.addRepository( organizationalUnit, repository );
             }
-            metadataStore.write( repository, organizationalUnit );
+//            metadataStore.write( finalAlias, repositoryEnvironmentConfigurations.getOrigin().toString() );
             return repository;
         } catch ( final Exception e ) {
             logger.error( "Error during create repository", e );
@@ -281,7 +280,8 @@ public class RepositoryServiceImpl implements RepositoryService {
                     if ( repository.getAlias().equals( alias ) ) {
                         organizationalUnitService.removeRepository( ou,
                                                                     repository );
-                        metadataStore.delete( repository, ou );
+                        String metadata = ou.getName() + "/" + alias;
+//                        metadataStore.delete( metadata );
                     }
                 }
             }

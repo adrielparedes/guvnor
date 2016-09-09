@@ -16,9 +16,10 @@
 
 package org.guvnor.structure.backend.repositories.git;
 
-import org.guvnor.structure.organizationalunit.OrganizationalUnit;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.guvnor.structure.repositories.GitMetadata;
-import org.guvnor.structure.repositories.Repository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,9 +27,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.server.io.object.ObjectStorage;
 
-import static org.junit.Assert.*;
+import static org.jgroups.util.Util.*;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.*;
 
@@ -38,13 +40,7 @@ public class GitMetadataStoreTest {
     private GitMetadataStore metadataStore;
 
     @Mock
-    private Repository repository;
-
-    @Mock
     private ObjectStorage storage;
-
-    @Mock
-    private OrganizationalUnit organizationalUnit;
 
     @Before
     public void setUp() throws Exception {
@@ -59,35 +55,82 @@ public class GitMetadataStoreTest {
 
     @Test
     public void testCreatesRightPathToSave() {
-        when( repository.getAlias() ).thenReturn( "theRepository" );
-        when( organizationalUnit.getName() ).thenReturn( "aparedes" );
-        metadataStore.write( repository, organizationalUnit );
+        metadataStore.write( "test/repo", "" );
+        verify( storage ).write( eq( "/test/repo.metadata" ), anyObject() );
+    }
 
-        verify( storage ).write( eq( "/aparedes/theRepository" ), anyObject() );
+    @Test
+    public void testFixRightPathToSave() {
+        metadataStore.write( "/test/repo", "" );
+        verify( storage ).write( eq( "/test/repo.metadata" ), anyObject() );
     }
 
     @Test
     public void testCreatesRightPathToDelete() {
-        when( repository.getAlias() ).thenReturn( "theRepository" );
-        when( organizationalUnit.getName() ).thenReturn( "aparedes" );
-        metadataStore.delete( repository, organizationalUnit );
+        metadataStore.delete( "test/repo" );
 
-        verify( storage ).delete( eq( "/aparedes/theRepository" ) );
+        verify( storage ).delete( eq( "/test/repo.metadata" ) );
     }
 
     @Test
-    public void testMetadata() {
+    public void testWriteNewMetadataWithoutOrigin() {
 
-        final String repositoryName = "theRepository";
-        GitMetadata metaResponse = mock( GitMetadata.class );
-        when( metaResponse.getRepositoryName() ).thenReturn( repositoryName );
-        when( repository.getAlias() ).thenReturn( repositoryName );
-        when( organizationalUnit.getName() ).thenReturn( "aparedes" );
-        when( storage.read( anyString() ) ).thenReturn( metaResponse );
-        GitMetadata metadata = metadataStore.read( repository, organizationalUnit );
+        Map<String, GitMetadata> metadatas = new HashMap<>();
+        doAnswer( invocationOnMock -> {
+            String key = invocationOnMock.getArgumentAt( 0, String.class );
+            GitMetadata metadata = invocationOnMock.getArgumentAt( 1, GitMetadata.class );
+            metadatas.put( key, metadata );
+            return null;
+        } ).when( storage ).write( anyString(), any() );
 
-        verify( storage ).read( eq( "/aparedes/theRepository" ) );
-        assertEquals( repositoryName, metadata.getRepositoryName() );
+        metadataStore.write( "test/repo", null );
+        assertEquals( "test/repo", metadatas.get( "/test/repo.metadata" ).getName() );
+
+    }
+
+    @Test
+    public void testWriteNewMetadataWithOrigin() {
+
+        Map<String, GitMetadata> metadatas = new HashMap<>();
+        doAnswer( invocationOnMock -> {
+            String key = invocationOnMock.getArgumentAt( 0, String.class );
+            GitMetadata metadata = invocationOnMock.getArgumentAt( 1, GitMetadata.class );
+            metadatas.put( key, metadata );
+            return null;
+        } ).when( storage ).write( anyString(), any() );
+
+        metadataStore.write( "test/repo", "other/repo" );
+
+        assertEquals( "test/repo", metadatas.get( "/test/repo.metadata" ).getName() );
+        assertEquals( "other/repo", metadatas.get( "/other/repo.metadata" ).getName() );
+
+    }
+
+    @Test
+    public void testWriteTwoForks() {
+
+        Map<String, GitMetadata> metadatas = new HashMap<>();
+        doAnswer( invocationOnMock -> {
+            String key = invocationOnMock.getArgumentAt( 0, String.class );
+            GitMetadata metadata = invocationOnMock.getArgumentAt( 1, GitMetadata.class );
+            metadatas.put( key, metadata );
+            return null;
+        } ).when( storage ).write( anyString(), any() );
+
+        doAnswer( invocationOnMock -> {
+            String key = invocationOnMock.getArgumentAt( 0, String.class );
+            return metadatas.get( key );
+        } ).when( storage ).read( anyString() );
+
+        metadataStore.write( "test/repo", "origin/repo" );
+        metadataStore.write( "fork/repo", "origin/repo" );
+
+        assertEquals( 3, metadatas.size() );
+        assertEquals( "test/repo", metadatas.get( "/test/repo.metadata" ).getName() );
+        assertEquals( "fork/repo", metadatas.get( "/fork/repo.metadata" ).getName() );
+        assertEquals( "origin/repo", metadatas.get( "/origin/repo.metadata" ).getName() );
+
+        assertEquals( 2, metadatas.get( "/origin/repo.metadata" ).getForks().size() );
 
     }
 }

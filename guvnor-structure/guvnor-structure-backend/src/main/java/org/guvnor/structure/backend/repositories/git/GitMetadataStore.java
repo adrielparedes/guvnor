@@ -16,12 +16,11 @@
 
 package org.guvnor.structure.backend.repositories.git;
 
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.repositories.GitMetadata;
-import org.guvnor.structure.repositories.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.io.object.ObjectStorage;
@@ -29,7 +28,7 @@ import org.uberfire.backend.server.io.object.ObjectStorage;
 public class GitMetadataStore {
 
     private Logger logger = LoggerFactory.getLogger( GitMetadataStore.class );
-
+    public static final String SEPARATOR = "/";
     public static final String METADATA = "default://system/metadata";
 
     private ObjectStorage storage;
@@ -42,54 +41,65 @@ public class GitMetadataStore {
     @PostConstruct
     public void init() {
 
-        logger.info( "Initializing GitMetadataStore {}", this.storage );
+        if ( logger.isDebugEnabled() ) {
+            logger.debug( "Initializing GitMetadataStore {}", METADATA );
+        }
         this.storage.init( METADATA );
     }
 
-    public void write( Repository repository,
-                       OrganizationalUnit organizationalUnit ) {
+    public void write( String name,
+                       String origin ) {
 
-        String owner = getOwner( organizationalUnit );
-        String repositoryName = repository.getAlias();
-        String path = buildPath( owner, repositoryName );
+        GitMetadata repositoryMetadata = this.read( name ).orElse( new GitMetadata() );
+        repositoryMetadata.setName( name );
 
-        GitMetadata metadata = new GitMetadata();
-        metadata.setRepositoryName( repositoryName );
-        metadata.setOwner( owner );
+        if ( origin != null ) {
+            repositoryMetadata.setOrigin( origin );
+        }
 
-        this.storage.write( path, metadata );
+        if ( isStorableOrigin( origin ) ) {
+            GitMetadata originMetadata = this.read( origin ).orElse( new GitMetadata() );
+            originMetadata.setName( origin );
+            originMetadata.addFork( name );
+            this.storage.write( buildPath( origin ), originMetadata );
+        }
+
+        this.storage.write( buildPath( name ), repositoryMetadata );
 
     }
 
-    public GitMetadata read( Repository repository,
-                             OrganizationalUnit organizationalUnit ) {
-        String owner = getOwner( organizationalUnit );
-        String repositoryName = repository.getAlias();
-        String path = buildPath( owner, repositoryName );
-        return this.storage.read( path );
+    public Optional<GitMetadata> read( String name ) {
+        try {
+            final GitMetadata metadata = this.storage.read( buildPath( name ) );
+            if ( metadata == null ) {
+                return Optional.empty();
+            } else {
+                return Optional.of( metadata );
+            }
+
+        } catch ( RuntimeException e ) {
+            return Optional.empty();
+        }
     }
 
-    public void move( String source,
-                      String target ) {
-        this.storage.move( source, target );
-    }
-
-    public void delete( Repository repository,
-                        OrganizationalUnit organizationalUnit ) {
-        String owner = getOwner( organizationalUnit );
-        String repositoryName = repository.getAlias();
-        String path = buildPath( owner, repositoryName );
+    public void delete( String name ) {
+        String path = buildPath( name );
         this.storage.delete( path );
     }
 
-    private String getOwner( final OrganizationalUnit organizationalUnit ) {
-        String owner = organizationalUnit.getName();
-        return owner;
+    private boolean isStorableOrigin( final String origin ) {
+        return origin != null && origin.matches( "(^\\w+\\/\\w+$)" );
     }
 
-    private String buildPath( final String owner,
-                              final String repositoryName ) {
-        return "/" + owner + "/" + repositoryName;
+    private String buildPath( String name ) {
+        String path = SEPARATOR + name;
+        if ( name.indexOf( SEPARATOR ) == 0 ) {
+            path = name;
+        }
+        if ( path.lastIndexOf( SEPARATOR ) == path.length() - 1 ) {
+            path = path.substring( 0, path.length() );
+        }
+        return path + ".metadata";
     }
 
 }
