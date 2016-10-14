@@ -62,6 +62,7 @@
     <module>guvnor-organizationalunit-manager</module>
     <module>guvnor-asset-mgmt</module>
     <module>guvnor-ala</module>
+    <module>guvnor-pull-request</module>
   </modules>
 
   <build>
