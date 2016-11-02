@@ -14,27 +14,8 @@
  * limitations under the License.
  */
 
-package org.guvnor.pullrequest.client;
+package org.guvnor.pullrequest.client.diff;
 
-import javax.inject.Inject;
-
-import com.google.gwt.user.client.ui.IsWidget;
-
-public class PullRequestItemPresenter {
-
-    private View view;
-
-    public interface View extends IsWidget {
-
-    }
-
-    @Inject
-    public PullRequestItemPresenter( final View view ) {
-        this.view = view;
-    }
-
-    public View getView() {
-        return view;
-    }
-
+public enum LineType {
+    ADD, REMOVE, NONE
 }

@@ -16,6 +16,9 @@
 
 package org.guvnor.structure.repositories;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * Represents a Pull Request information to be tracked as metadata.
  */
@@ -57,4 +60,24 @@ public interface PullRequest {
      * @return the pull request status
      */
     PullRequestStatus getStatus();
+
+    /**
+     * Returns the title of the pull request. It should be a small description.
+     * @return the title of the pull request.
+     */
+    String getTitle();
+
+    /**
+     * Returns the name of the author who created the Pull Request
+     * @return author name
+     */
+    String getAuthor();
+
+    /**
+     * Returns the date when the Pull Request was created.
+     * @return the date of the pull request
+     */
+    Date getDate();
+
+    List<Comment> getComments();
 }

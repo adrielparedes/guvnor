@@ -39,18 +39,28 @@
     </dependency>
 
     <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-structure-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-structure-backend</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-api</artifactId>
     </dependency>
 
     <!--<dependency>-->
-      <!--<groupId>org.uberfire</groupId>-->
-      <!--<artifactId>uberfire-security-api</artifactId>-->
+    <!--<groupId>org.uberfire</groupId>-->
+    <!--<artifactId>uberfire-security-api</artifactId>-->
     <!--</dependency>-->
 
     <!--<dependency>-->
-      <!--<groupId>org.uberfire</groupId>-->
-      <!--<artifactId>uberfire-security-client</artifactId>-->
+    <!--<groupId>org.uberfire</groupId>-->
+    <!--<artifactId>uberfire-security-client</artifactId>-->
     <!--</dependency>-->
 
     <dependency>
@@ -84,13 +94,13 @@
     </dependency>
 
     <!--<dependency>-->
-      <!--<groupId>org.guvnor</groupId>-->
-      <!--<artifactId>guvnor-project-api</artifactId>-->
+    <!--<groupId>org.guvnor</groupId>-->
+    <!--<artifactId>guvnor-project-api</artifactId>-->
     <!--</dependency>-->
 
     <!--<dependency>-->
-      <!--<groupId>org.guvnor</groupId>-->
-      <!--<artifactId>guvnor-services-api</artifactId>-->
+    <!--<groupId>org.guvnor</groupId>-->
+    <!--<artifactId>guvnor-services-api</artifactId>-->
     <!--</dependency>-->
 
     <dependency>
@@ -106,6 +116,17 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-common</artifactId>
+    </dependency>
+
+    <!--Logs-->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-ext</artifactId>
     </dependency>
 
     <dependency>

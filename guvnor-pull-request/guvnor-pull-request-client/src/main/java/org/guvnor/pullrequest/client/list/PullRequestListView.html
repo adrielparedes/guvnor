@@ -19,9 +19,12 @@
 
     <div class="col-sm-12">
         <div class="row toolbar-pf-results">
-            <div class="col-sm-12">
-                <h5>3 Open</h5>
-                <h5>100 Closed</h5>
+            <div class="col-sm-11">
+                <h5><span id="open-pull-requests-size"></span> Open</h5>
+                <h5><span id="closed-pull-requests-size"></span> Closed</h5>
+            </div>
+            <div class="col-sm-1">
+                <button id="create-pull-request" class="btn btn-default">Mock PR</button>
             </div>
         </div>
     </div>
@@ -36,6 +39,34 @@
 
         <div id="pull-requests-list" class="list-group list-view-pf list-view-pf-view">
         </div>
+
+        <ul class="pagination">
+            <li>
+                <a href="#">
+                    <span class="i fa fa-angle-left"></span>
+                </a>
+            </li>
+            <li>
+                <a href="#">1</a>
+            </li>
+            <li>
+                <a href="#">2</a>
+            </li>
+            <li>
+                <a href="#">3</a>
+            </li>
+            <li>
+                <a href="#">4</a>
+            </li>
+            <li>
+                <a href="#">5</a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="i fa fa-angle-right"></span>
+                </a>
+            </li>
+        </ul>
     </div>
 
 </div>

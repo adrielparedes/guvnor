@@ -18,28 +18,35 @@ package org.guvnor.structure.backend.repositories;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.guvnor.structure.repositories.Comment;
 import org.guvnor.structure.repositories.GitMetadata;
 import org.guvnor.structure.repositories.GitMetadataStore;
+import org.guvnor.structure.repositories.PortableFileDiff;
 import org.guvnor.structure.repositories.PullRequest;
 import org.guvnor.structure.repositories.PullRequestAlreadyExistsException;
 import org.guvnor.structure.repositories.PullRequestService;
 import org.guvnor.structure.repositories.PullRequestStatus;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryNotFoundException;
+import org.guvnor.structure.repositories.impl.CommentImpl;
 import org.guvnor.structure.repositories.impl.GitMetadataImpl;
 import org.guvnor.structure.repositories.impl.PullRequestImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.io.IOService;
-import org.uberfire.java.nio.base.FileDiff;
 import org.uberfire.java.nio.base.options.MergeCopyOption;
 import org.uberfire.java.nio.file.Path;
 
@@ -48,6 +55,9 @@ import static java.util.stream.Collectors.*;
 import static org.uberfire.backend.server.util.Paths.*;
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
+//@Service
+@Alternative
+@ApplicationScoped
 public class PullRequestServiceImpl implements PullRequestService {
 
     private final GitMetadataStore metadataStore;
@@ -69,12 +79,16 @@ public class PullRequestServiceImpl implements PullRequestService {
     public PullRequest createPullRequest( String sourceRepository,
                                           String sourceBranch,
                                           String targetRepository,
-                                          String targetBranch ) {
+                                          String targetBranch,
+                                          String author,
+                                          String title ) {
 
         checkNotEmpty( "sourceRepository", sourceRepository );
         checkNotEmpty( "sourceBranch", sourceBranch );
         checkNotEmpty( "targetRepository", targetRepository );
         checkNotEmpty( "targetBranch", targetBranch );
+        checkNotEmpty( "author", author );
+        checkNotEmpty( "title", title );
 
         final Optional<GitMetadata> targetRepositoryMetadata = this.metadataStore.read( targetRepository );
 
@@ -95,7 +109,11 @@ public class PullRequestServiceImpl implements PullRequestService {
                                                        sourceRepository,
                                                        sourceBranch,
                                                        targetRepository,
-                                                       targetBranch, PullRequestStatus.OPEN );
+                                                       targetBranch,
+                                                       author,
+                                                       title,
+                                                       new Date(),
+                                                       PullRequestStatus.OPEN );
 
             if ( metadata.exists( storablePullRequest ) ) {
                 throw new PullRequestAlreadyExistsException( storablePullRequest );
@@ -161,6 +179,16 @@ public class PullRequestServiceImpl implements PullRequestService {
 
         this.changePullRequestStatus( repository, id, PullRequestStatus.CLOSED );
         return this.getRepositoryMetadata( repository ).getPullRequest( id );
+    }
+
+    @Override
+    public void addComment( final String repository,
+                            final long id,
+                            final String author,
+                            final String content ) {
+
+        Comment comment = new CommentImpl( UUID.randomUUID().toString(), author, new Date(), content );
+        final PullRequest pullRequest = this.getPullRequestByRepositoryAndId( repository, id );
     }
 
     public List<PullRequest> getPullRequestsByBranch( Integer page,
@@ -238,14 +266,36 @@ public class PullRequestServiceImpl implements PullRequestService {
     }
 
     @Override
-    public List<FileDiff> diff( final PullRequest pullRequest ) {
+    public List<PortableFileDiff> diff( final PullRequest pullRequest ) {
 
         final Repository repository = configuredRepositories.getRepositoryByRepositoryAlias( pullRequest.getTargetRepository() );
         this.createHiddenBranch( pullRequest );
         String diff = String.format( "diff:%s,%s", pullRequest.getTargetBranch(), this.buildHiddenBranchName( pullRequest ) );
-        final List<FileDiff> diffs = (List<FileDiff>) this.ioService.readAttributes( convert( repository.getRoot() ), diff );
+        final List<PortableFileDiff> diffs = (List<PortableFileDiff>) this.ioService.readAttributes( convert( repository.getRoot() ), diff );
         this.deleteHiddenBranch( pullRequest );
         return diffs;
+    }
+
+    @Override
+    public long numberOfPullRequestsByStatus( final String repository,
+                                              final PullRequestStatus status ) {
+        return this.getPullRequestsByStatus( 0, 0, repository, status ).size();
+    }
+
+    @Override
+    public PullRequest getPullRequestByRepositoryAndId( final String repository,
+                                                        final long id ) {
+        final List<PullRequest> prs = this.getPullRequestsByRepository( 0, 0, repository ).stream().filter( elem -> elem.getId() == id ).collect( Collectors.toList() );
+        if ( prs.size() == 0 ) {
+            throw new NoSuchElementException( String.format( "The Pull Request #%s for repository <%s> does not exist", id, repository ) );
+        }
+        return prs.get( 0 );
+    }
+
+    @Override
+    public List<Comment> getCommentsByPullRequetsId( final String repository,
+                                                     final long id ) {
+        return this.getPullRequestByRepositoryAndId( repository, id ).getComments();
     }
 
     protected void changePullRequestStatus( final String repository,
@@ -262,6 +312,9 @@ public class PullRequestServiceImpl implements PullRequestService {
                                                                 pullRequest.getSourceBranch(),
                                                                 pullRequest.getTargetRepository(),
                                                                 pullRequest.getTargetBranch(),
+                                                                pullRequest.getAuthor(),
+                                                                pullRequest.getTitle(),
+                                                                pullRequest.getDate(),
                                                                 status );
 
         List<PullRequest> finalPullRequests = metadata.getPullRequests( elem -> elem.getId() != id );

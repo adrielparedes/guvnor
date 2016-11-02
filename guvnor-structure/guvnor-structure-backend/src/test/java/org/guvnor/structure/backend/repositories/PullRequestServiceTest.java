@@ -18,6 +18,7 @@ package org.guvnor.structure.backend.repositories;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,12 +93,12 @@ public class PullRequestServiceTest {
 
     @Test(expected = RepositoryNotFoundException.class)
     public void testCreatePullRequestToUnexistentRepository() {
-        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "doesNotExist/a", "master" );
+        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "doesNotExist/a", "master", "user", "pull request" );
     }
 
     @Test
     public void testCreatePullRequest() {
-        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master" );
+        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
         List<PullRequest> pullRequests = service.getPullRequestsByBranch( 0, 0, pullRequest.getTargetRepository(), pullRequest.getTargetBranch() );
         assertEquals( 1, pullRequests.size() );
         assertEquals( PullRequestStatus.OPEN, pullRequests.get( 0 ).getStatus() );
@@ -107,10 +108,10 @@ public class PullRequestServiceTest {
     public void testCreateSeveralPullRequest() {
         final String repository = "parent/a";
         final String branch = "master";
-        service.createPullRequest( "child/a", "develop", repository, branch );
-        service.createPullRequest( "child/b", "develop", repository, "otherBranch" );
-        service.createPullRequest( "child/c", "develop", repository, branch );
-        service.createPullRequest( "child/d", "develop", repository, branch );
+        service.createPullRequest( "child/a", "develop", repository, branch, "user", "pull request" );
+        service.createPullRequest( "child/b", "develop", repository, "otherBranch", "user", "pull request" );
+        service.createPullRequest( "child/c", "develop", repository, branch, "user", "pull request" );
+        service.createPullRequest( "child/d", "develop", repository, branch, "user", "pull request" );
         List<PullRequest> pullRequests = service.getPullRequestsByRepository( 0, 0, repository );
         assertEquals( 4, pullRequests.size() );
         assertTrue( pullRequests.stream().allMatch( elem -> elem.getStatus().equals( PullRequestStatus.OPEN ) ) );
@@ -118,7 +119,7 @@ public class PullRequestServiceTest {
 
     @Test
     public void testAcceptPullRequest() {
-        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master" );
+        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
 
         service.acceptPullRequest( pullRequest );
 
@@ -132,7 +133,7 @@ public class PullRequestServiceTest {
     public void testExceptionWhenTryingtoAcceptPullRequest() {
 
         when( ioService.copy( any( Path.class ), any( Path.class ), any() ) ).thenThrow( new RuntimeException( "Mock exception" ) );
-        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master" );
+        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
         try {
             service.acceptPullRequest( pullRequest );
             fail( "Should throw exception before this point" );
@@ -144,10 +145,10 @@ public class PullRequestServiceTest {
 
     @Test
     public void testFailToCreatePullRequest() {
-        PullRequest pullRequest = new PullRequestImpl( "child/a", "develop", "parent/a", "master" );
+        PullRequest pullRequest = new PullRequestImpl( "child/a", "develop", "parent/a", "master", "user", "pull request", new Date() );
         doThrow( new RuntimeException( "Mocked exception" ) ).when( this.storage ).write( any( String.class ), any( GitMetadata.class ) );
         try {
-            pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master" );
+            pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
             fail( "Should throw exception before this point" );
         } catch ( Exception e ) {
             List<PullRequest> pullRequests = service.getPullRequestsByBranch( 0, 0, pullRequest.getTargetRepository(), pullRequest.getTargetBranch() );
@@ -157,7 +158,7 @@ public class PullRequestServiceTest {
 
     @Test
     public void testRejectPullRequest() {
-        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master" );
+        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
         service.rejectPullRequest( pullRequest );
 
         List<PullRequest> pullRequests = service.getPullRequestsByBranch( 0, 0, pullRequest.getTargetRepository(), pullRequest.getTargetBranch() );
@@ -166,7 +167,7 @@ public class PullRequestServiceTest {
 
     @Test
     public void testClosePullRequest() {
-        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master" );
+        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
         service.closePullRequest( pullRequest );
 
         List<PullRequest> pullRequests = service.getPullRequestsByBranch( 0, 0, pullRequest.getTargetRepository(), pullRequest.getTargetBranch() );
@@ -175,7 +176,7 @@ public class PullRequestServiceTest {
 
     @Test
     public void testChangeStatusToMergedPullRequest() {
-        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master" );
+        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
         ( (PullRequestServiceImpl) service ).changePullRequestStatus( pullRequest.getTargetRepository(), pullRequest.getId(), PullRequestStatus.MERGED );
         List<PullRequest> pullRequests = service.getPullRequestsByBranch( 0, 0, pullRequest.getTargetRepository(), pullRequest.getTargetBranch() );
         assertEquals( PullRequestStatus.MERGED, pullRequests.get( 0 ).getStatus() );
@@ -183,7 +184,7 @@ public class PullRequestServiceTest {
 
     @Test
     public void testChangeStatusToClosedPullRequest() {
-        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master" );
+        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
         ( (PullRequestServiceImpl) service ).changePullRequestStatus( pullRequest.getTargetRepository(), pullRequest.getId(), PullRequestStatus.CLOSED );
         List<PullRequest> pullRequests = service.getPullRequestsByBranch( 0, 0, pullRequest.getTargetRepository(), pullRequest.getTargetBranch() );
         assertEquals( PullRequestStatus.CLOSED, pullRequests.get( 0 ).getStatus() );
@@ -191,7 +192,7 @@ public class PullRequestServiceTest {
 
     @Test
     public void testDeletePullRequest() {
-        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master" );
+        PullRequest pullRequest = service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
         service.deletePullRequest( pullRequest );
         List<PullRequest> pullRequests = service.getPullRequestsByBranch( 0, 0, pullRequest.getTargetRepository(), pullRequest.getTargetBranch() );
         assertEquals( 0, pullRequests.size() );
@@ -199,9 +200,9 @@ public class PullRequestServiceTest {
 
     @Test
     public void testGetAllPullRequests() {
-        service.createPullRequest( "child/a", "develop", "parent/a", "master" );
-        service.createPullRequest( "child/b", "develop", "parent/a", "develop" );
-        service.createPullRequest( "child/c", "develop", "parent/a", "master" );
+        service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
+        service.createPullRequest( "child/b", "develop", "parent/a", "develop", "user", "pull request" );
+        service.createPullRequest( "child/c", "develop", "parent/a", "master", "user", "pull request" );
 
         final List<PullRequest> pullRequestsForBranchMaster = service.getPullRequestsByBranch( 0, 0, "parent/a", "master" );
         final List<PullRequest> pullRequestsForBranchDevelop = service.getPullRequestsByBranch( 0, 0, "parent/a", "develop" );
@@ -214,10 +215,10 @@ public class PullRequestServiceTest {
 
     @Test
     public void testGetAllPullRequestsWithDifferentStatus() {
-        PullRequest pullRequestA = service.createPullRequest( "child/a", "develop", "parent/a", "master" );
-        PullRequest pullRequestB = service.createPullRequest( "child/b", "develop", "parent/a", "develop" );
-        PullRequest pullRequestC = service.createPullRequest( "child/c", "develop", "parent/a", "master" );
-        PullRequest pullRequestD = service.createPullRequest( "child/d", "develop", "parent/a", "master" );
+        PullRequest pullRequestA = service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
+        PullRequest pullRequestB = service.createPullRequest( "child/b", "develop", "parent/a", "develop", "user", "pull request" );
+        PullRequest pullRequestC = service.createPullRequest( "child/c", "develop", "parent/a", "master", "user", "pull request" );
+        PullRequest pullRequestD = service.createPullRequest( "child/d", "develop", "parent/a", "master", "user", "pull request" );
 
         service.acceptPullRequest( pullRequestA );
         service.rejectPullRequest( pullRequestB );
@@ -236,10 +237,10 @@ public class PullRequestServiceTest {
 
     @Test
     public void testGeneratePullRequestId() {
-        PullRequest pullRequestOne = service.createPullRequest( "child/a", "develop", "parent/a", "master" );
-        PullRequest pullRequestTwo = service.createPullRequest( "child/a", "fix", "parent/a", "master" );
-        PullRequest pullRequestThree = service.createPullRequest( "child/a", "fix", "parent/a", "develop" );
-        PullRequest pullRequestFour = service.createPullRequest( "child/b", "fix", "parent/a", "master" );
+        PullRequest pullRequestOne = service.createPullRequest( "child/a", "develop", "parent/a", "master", "user", "pull request" );
+        PullRequest pullRequestTwo = service.createPullRequest( "child/a", "fix", "parent/a", "master", "user", "pull request" );
+        PullRequest pullRequestThree = service.createPullRequest( "child/a", "fix", "parent/a", "develop", "user", "pull request" );
+        PullRequest pullRequestFour = service.createPullRequest( "child/b", "fix", "parent/a", "master", "user", "pull request" );
         assertEquals( 1, pullRequestOne.getId() );
         assertEquals( 2, pullRequestTwo.getId() );
         assertEquals( 3, pullRequestThree.getId() );
@@ -248,35 +249,35 @@ public class PullRequestServiceTest {
 
     @Test(expected = PullRequestAlreadyExistsException.class)
     public void testCannotCreateSamePullRequest() {
-        service.createPullRequest( "child/a", "fix", "parent/a", "master" );
-        service.createPullRequest( "child/a", "fix", "parent/a", "master" );
+        service.createPullRequest( "child/a", "fix", "parent/a", "master", "user", "pull request" );
+        service.createPullRequest( "child/a", "fix", "parent/a", "master", "user", "pull request" );
     }
 
     @Test
     public void testCreateANewPullRequestWhenItISClosed() {
-        final PullRequest pr1 = service.createPullRequest( "child/a", "fix", "parent/a", "master" );
+        final PullRequest pr1 = service.createPullRequest( "child/a", "fix", "parent/a", "master", "user", "pull request" );
         service.acceptPullRequest( pr1 );
-        final PullRequest pr2 = service.createPullRequest( "child/a", "fix", "parent/a", "master" );
+        final PullRequest pr2 = service.createPullRequest( "child/a", "fix", "parent/a", "master", "user", "pull request" );
         service.acceptPullRequest( pr2 );
         assertEquals( 2, pr2.getId() );
     }
 
     @Test
     public void testGeneratedNumbersWhenPRAlreadyExists() {
-        final PullRequest pr1 = service.createPullRequest( "child/a", "fix", "parent/a", "master" );
+        final PullRequest pr1 = service.createPullRequest( "child/a", "fix", "parent/a", "master", "user", "pull request" );
         try {
-            final PullRequest pr2 = service.createPullRequest( "child/a", "fix", "parent/a", "master" );
+            final PullRequest pr2 = service.createPullRequest( "child/a", "fix", "parent/a", "master", "user", "pull request" );
         } catch ( PullRequestAlreadyExistsException e ) {
 
         }
-        final PullRequest pr2 = service.createPullRequest( "child/b", "fix", "parent/a", "master" );
+        final PullRequest pr2 = service.createPullRequest( "child/b", "fix", "parent/a", "master", "user", "pull request" );
         assertEquals( 2, pr2.getId() );
     }
 
     @Test
     public void testBuildHiddenPath() {
 
-        ( (PullRequestServiceImpl) service ).buildHiddenPath( new PullRequestImpl( 1, "source/a", "develop", "target/a", "master", PullRequestStatus.OPEN ) );
+        ( (PullRequestServiceImpl) service ).buildHiddenPath( new PullRequestImpl( 1, "source/a", "develop", "target/a", "master", "user", "pull request", new Date(), PullRequestStatus.OPEN ) );
         final URI uri = URI.create( "git://PR-1-source/a/develop-master@target/a" );
 
         verify( ioService ).get( eq( uri ) );
@@ -293,7 +294,7 @@ public class PullRequestServiceTest {
 
     @Test
     public void testPagination() {
-        final PullRequestImpl pr = new PullRequestImpl( 1, "source/a", "develop", "target/a", "master", PullRequestStatus.OPEN );
+        final PullRequestImpl pr = new PullRequestImpl( 1, "source/a", "develop", "target/a", "master", "user", "pull request", new Date(), PullRequestStatus.OPEN );
         List<PullRequest> pullRequests = Arrays.asList( pr, pr, pr, pr, pr, pr, pr, pr, pr, pr );
 
         assertEquals( 10, ( (PullRequestServiceImpl) service ).paginate( 0, 0, pullRequests ).size() );

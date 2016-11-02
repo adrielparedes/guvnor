@@ -1,5 +1,5 @@
 /*
- * 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package org.guvnor.pullrequest.client;
+package org.guvnor.structure.repositories;
 
-import javax.enterprise.context.Dependent;
+import java.util.Date;
 
-import com.google.gwt.user.client.ui.Composite;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
+public interface Comment {
 
-@Templated
-@Dependent
-public class PullRequestItemView extends Composite implements PullRequestItemPresenter.View {
+    String getId();
 
+    String getAuthor();
+
+    Date getDate();
+
+    String getContent();
 }

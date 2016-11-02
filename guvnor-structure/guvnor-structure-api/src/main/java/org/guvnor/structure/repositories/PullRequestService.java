@@ -18,7 +18,7 @@ package org.guvnor.structure.repositories;
 
 import java.util.List;
 
-import org.uberfire.java.nio.base.FileDiff;
+import org.jboss.errai.bus.server.annotations.Remote;
 
 /**
  * Service that contains the basic mechanism to administrate pull requests.
@@ -26,6 +26,7 @@ import org.uberfire.java.nio.base.FileDiff;
  * The pull request id is unique in every repository, but it can be repeated
  * across them.
  */
+@Remote
 public interface PullRequestService {
 
     /**
@@ -39,7 +40,9 @@ public interface PullRequestService {
     PullRequest createPullRequest( String sourceRepository,
                                    String sourceBranch,
                                    String targetRepository,
-                                   String targetBranch );
+                                   String targetBranch,
+                                   String author,
+                                   String title );
 
     /**
      * Accepts the provided pull request and merges branches into target.
@@ -61,6 +64,11 @@ public interface PullRequestService {
      * @return the final state of the pull request as CLOSED.
      */
     PullRequest closePullRequest( PullRequest pullRequest );
+
+    void addComment( String repository,
+                     long id,
+                     String author,
+                     String content );
 
     /**
      * Deletes the pull request. This method removes the pull request
@@ -111,6 +119,21 @@ public interface PullRequestService {
      * @param pullRequest the pull request to diff.
      * @return The list of segment differences from files.
      */
-    List<FileDiff> diff( PullRequest pullRequest );
+    List<PortableFileDiff> diff( PullRequest pullRequest );
+
+    /**
+     * Returns the number of pull requests by a given Status and the target repository.
+     * @param repository the target repository where pull requests are generated.
+     * @param status the status to filter pull requests.
+     * @return the number of pull requests.
+     */
+    long numberOfPullRequestsByStatus( String repository,
+                                       PullRequestStatus status );
+
+    PullRequest getPullRequestByRepositoryAndId( String targetRepository,
+                                                 long id );
+
+    List<Comment> getCommentsByPullRequetsId( String repository,
+                                              long id );
 
 }

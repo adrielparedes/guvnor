@@ -1,0 +1,150 @@
+/*
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * 2016 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * 2016 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.guvnor.pullrequest.client.list;
+
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import com.google.gwt.user.client.ui.IsWidget;
+import org.guvnor.pullrequest.client.item.PullRequestItemPresenter;
+import org.guvnor.structure.repositories.PullRequest;
+import org.guvnor.structure.repositories.PullRequestService;
+import org.guvnor.structure.repositories.PullRequestStatus;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.client.annotations.WorkbenchScreen;
+
+@ApplicationScoped
+@WorkbenchScreen(identifier = "PullRequestList")
+public class PullRequestListPresenter {
+
+    private View view;
+
+    private ManagedInstance<PullRequestItemPresenter> itemPresenters;
+    private Caller<PullRequestService> pullRequestService;
+
+    public interface View extends IsWidget {
+
+        void init( PullRequestListPresenter presenter );
+
+        void addPullRequest( final PullRequestItemPresenter.View view );
+
+        void setNumberOfOpenPullRequests( long number );
+
+        void setNumberOfClosedPullRequests( long number );
+
+        void clear();
+    }
+
+    @Inject
+    public PullRequestListPresenter( final PullRequestListPresenter.View view,
+                                     final ManagedInstance<PullRequestItemPresenter> itemPresenters,
+                                     final Caller<PullRequestService> pullRequestService ) {
+        this.view = view;
+        this.itemPresenters = itemPresenters;
+        this.pullRequestService = pullRequestService;
+    }
+
+    @PostConstruct
+    public void initialize() {
+
+        view.init( this );
+        this.refresh();
+    }
+
+    public void refresh() {
+        final String repository = "";
+
+        this.view.clear();
+        pullRequestService.call( size -> {
+            view.setNumberOfOpenPullRequests( (Long) size );
+        } ).numberOfPullRequestsByStatus( repository, PullRequestStatus.OPEN );
+
+        pullRequestService.call( size -> {
+            view.setNumberOfClosedPullRequests( (Long) size );
+        } ).numberOfPullRequestsByStatus( repository, PullRequestStatus.MERGED );
+
+        pullRequestService
+                .call( prs -> {
+                    showPullRequests( (List<PullRequest>) prs );
+                } )
+                .getPullRequestsByStatus( 0, 0, repository, PullRequestStatus.OPEN );
+    }
+
+    private void showPullRequests( final List<PullRequest> prs ) {
+        prs.forEach( ( pr ) -> {
+            final PullRequestItemPresenter pullRequestItemPresenter = itemPresenters.get();
+            pullRequestItemPresenter.setPullRequest( pr );
+            pullRequestItemPresenter.initialize();
+            view.addPullRequest( pullRequestItemPresenter.getView() );
+        } );
+    }
+
+    public void createPullRequest() {
+        pullRequestService.call( ( pr ) -> {
+            refresh();
+        } ).createPullRequest( "source", "a", "target", "b", "adrielparedes", "[GUVNOR-123] Pull Request Mock Title" );
+
+    }
+
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return "Pull Requests";
+    }
+
+    @WorkbenchPartView
+    public IsWidget getView() {
+        return view;
+    }
+
+}
