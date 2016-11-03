@@ -16,12 +16,15 @@
 
 package org.guvnor.pullrequest.client.item;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.guvnor.pullrequest.client.utils.Places;
 import org.guvnor.structure.repositories.PullRequest;
 import org.guvnor.structure.repositories.PullRequestService;
 import org.jboss.errai.common.client.api.Caller;
@@ -48,7 +51,9 @@ public class PullRequestItemPresenter {
 
         void setTitle( String title );
 
-        void setSubtitle( String subtitle );
+        void setSubtitle( long id,
+                          long daysAgo,
+                          String username );
     }
 
     private PlaceManager placeManager;
@@ -79,10 +84,20 @@ public class PullRequestItemPresenter {
         this.view.init( this );
         this.view.setRepository( this.getPullRequest().getTargetRepository() );
         this.view.setTitle( "Pull Request featuressss" );
-        this.view.setSubtitle( "#" + this.getPullRequest().getId() + " opened 4 days ago by aparedes" );
+        this.view.setSubtitle( this.getPullRequest().getId(), this.calculateDaysAgo( this.getPullRequest().getDate() ), this.getPullRequest().getAuthor() );
         this.view.setId( this.getPullRequest().getId() );
-        this.view.setFrom( this.getPullRequest().getSourceRepository() + "/" + this.getPullRequest().getSourceBranch() );
-        this.view.setTo( this.getPullRequest().getTargetRepository() + "/" + this.getPullRequest().getTargetBranch() );
+        this.view.setFrom( generatePath( this.getPullRequest().getSourceRepository(), this.getPullRequest().getSourceBranch() ) );
+        this.view.setTo( this.generatePath( this.getPullRequest().getTargetRepository(), this.getPullRequest().getTargetBranch() ) );
+    }
+
+    protected String generatePath( String repository,
+                                   String branch ) {
+        return repository + "/" + branch;
+    }
+
+    protected long calculateDaysAgo( final Date date ) {
+        long diff = Calendar.getInstance().getTime().getTime() - date.getTime();
+        return diff / ( 1000 * 60 * 60 * 24 );
     }
 
     public void goToReview( final long id,
@@ -93,7 +108,7 @@ public class PullRequestItemPresenter {
                 put( "repository", String.valueOf( repository ) );
             }
         };
-        PlaceRequest request = new DefaultPlaceRequest( "PullRequestDescription", params );
+        PlaceRequest request = new DefaultPlaceRequest( Places.PULL_REQUEST_DESCRIPTION, params );
         placeManager.goTo( request );
     }
 

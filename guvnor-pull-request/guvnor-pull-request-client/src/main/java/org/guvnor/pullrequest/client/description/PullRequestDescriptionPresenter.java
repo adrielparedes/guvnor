@@ -37,6 +37,7 @@ import org.uberfire.mvp.PlaceRequest;
 @WorkbenchScreen(identifier = "PullRequestDescription")
 public class PullRequestDescriptionPresenter {
 
+    public static final String PULL_REQUESTS_DESCRIPTION_TITLE = "Pull Requests Description";
     private final Caller<PullRequestService> pullRequestService;
     private PlaceRequest place;
 
@@ -110,7 +111,7 @@ public class PullRequestDescriptionPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Pull Requests Description";
+        return PULL_REQUESTS_DESCRIPTION_TITLE;
     }
 
     @WorkbenchPartView

@@ -58,6 +58,7 @@ import org.guvnor.pullrequest.client.item.PullRequestItemPresenter;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.gwtbootstrap3.client.ui.html.Span;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -65,6 +66,9 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 @Templated
 @Dependent
 public class PullRequestListView extends Composite implements PullRequestListPresenter.View {
+
+    @Inject
+    private TranslationService translationService;
 
     @Inject
     @DataField("pull-requests-list")

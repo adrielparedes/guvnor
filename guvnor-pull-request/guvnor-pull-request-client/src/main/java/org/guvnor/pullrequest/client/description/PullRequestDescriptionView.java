@@ -68,6 +68,10 @@ public class PullRequestDescriptionView extends Composite implements PullRequest
 
     private PullRequestDescriptionPresenter presenter;
 
+    @Inject
+    public PullRequestDescriptionView() {
+    }
+
     @Override
     public void initialize( PullRequestDescriptionPresenter presenter,
                             CommentsPresenter commentsPresenter,

@@ -103,7 +103,10 @@ public class PullRequestItemView extends Composite implements PullRequestItemPre
     }
 
     @Override
-    public void setSubtitle( final String subtitle ) {
+    public void setSubtitle( long id,
+                             long daysAgo,
+                             String username ) {
+        String subtitle = String.format( "#%d opened %d days ago by %s", id, daysAgo, username );
         this.subtitle.setText( subtitle );
     }
 

@@ -55,11 +55,13 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.pullrequest.client.item.PullRequestItemPresenter;
+import org.guvnor.pullrequest.client.resources.i18n.Constants;
 import org.guvnor.structure.repositories.PullRequest;
 import org.guvnor.structure.repositories.PullRequestService;
 import org.guvnor.structure.repositories.PullRequestStatus;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -68,6 +70,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 @WorkbenchScreen(identifier = "PullRequestList")
 public class PullRequestListPresenter {
 
+    private final TranslationService translationService;
     private View view;
 
     private ManagedInstance<PullRequestItemPresenter> itemPresenters;
@@ -89,10 +92,12 @@ public class PullRequestListPresenter {
     @Inject
     public PullRequestListPresenter( final PullRequestListPresenter.View view,
                                      final ManagedInstance<PullRequestItemPresenter> itemPresenters,
+                                     final TranslationService translationService,
                                      final Caller<PullRequestService> pullRequestService ) {
         this.view = view;
         this.itemPresenters = itemPresenters;
         this.pullRequestService = pullRequestService;
+        this.translationService = translationService;
     }
 
     @PostConstruct
@@ -139,7 +144,7 @@ public class PullRequestListPresenter {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Pull Requests";
+        return translationService.format( Constants.PULL_REQUESTS_TITLE );
     }
 
     @WorkbenchPartView
