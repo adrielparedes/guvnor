@@ -22,4 +22,19 @@ public class Constants {
 
     @TranslationKey(defaultValue = "")
     public final static String PULL_REQUESTS_TITLE = "PullRequestListView.PullRequestsTitle";
+
+    @TranslationKey(defaultValue = "")
+    public final static String PULL_REQUEST_ITEM_VIEW_SUBTITLE = "PullRequestItemView.Subtitle";
+
+    @TranslationKey(defaultValue = "")
+    public static final String PULL_REQUEST_DESCRIPTION_COMMENTS = "PullRequestDescriptionView.Comments";
+
+    @TranslationKey(defaultValue = "")
+    public static final String PULL_REQUEST_DESCRIPTION_DIFFS = "PullRequestDescriptionView.Diffs";
+
+    @TranslationKey(defaultValue = "")
+    public static final String PULL_REQUEST_COMMENTS_EMPTY_CONTENT = "PullRequestCommentsPresenter.EmptyContent";
+
+    @TranslationKey(defaultValue = "")
+    public static final String PULL_REQUEST_COMMENTS_EMPTY_AUTHOR = "PullRequestCommentsPresenter.EmptyAuthor";
 }

@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-package org.guvnor.pullrequest.client.utils;
+package org.guvnor.pullrequest.client.events;
 
-public class Places {
+import org.guvnor.structure.repositories.PullRequestStatus;
 
-    public final static String PULL_REQUEST_DESCRIPTION = "PullRequestDescription";
-    public static final String PULL_REQUEST_LIST = "PullRequestList";
+public class StatusChanged {
+
+    private final PullRequestStatus status;
+
+    public StatusChanged( String status ) {
+        this.status = PullRequestStatus.valueOf( status.toUpperCase() );
+    }
+
+    public StatusChanged( PullRequestStatus status ) {
+        this.status = status;
+    }
+
+    public PullRequestStatus getStatus() {
+        return status;
+    }
 }

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package org.guvnor.pullrequest.client.utils;
-
-public class Places {
-
-    public final static String PULL_REQUEST_DESCRIPTION = "PullRequestDescription";
-    public static final String PULL_REQUEST_LIST = "PullRequestList";
+.strong {
+    font-weight: bold;
 }
+

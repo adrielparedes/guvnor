@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package org.guvnor.pullrequest.client.utils;
+package org.guvnor.pullrequest.client.resources;
 
-public class Places {
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import org.guvnor.pullrequest.client.resources.images.PullRequestImageResources;
 
-    public final static String PULL_REQUEST_DESCRIPTION = "PullRequestDescription";
-    public static final String PULL_REQUEST_LIST = "PullRequestList";
+public interface PullRequestResources extends ClientBundle {
+
+    public static final PullRequestResources INSTANCE = GWT.create( PullRequestResources.class );
+
+    PullRequestImageResources images();
+
 }

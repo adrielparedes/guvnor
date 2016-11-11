@@ -68,25 +68,19 @@ public class PullRequestServiceMock implements PullRequestService {
 
     @Override
     public PullRequest acceptPullRequest( final PullRequest pullRequest ) {
-        this.pullRequests.remove( pullRequest );
         final PullRequest pr = changeStatus( pullRequest, PullRequestStatus.MERGED );
-        this.pullRequests.add( pr );
         return pr;
     }
 
     @Override
     public PullRequest rejectPullRequest( final PullRequest pullRequest ) {
-        this.pullRequests.remove( pullRequest );
         final PullRequest pr = changeStatus( pullRequest, PullRequestStatus.REJECTED );
-        this.pullRequests.add( pr );
         return pr;
     }
 
     @Override
     public PullRequest closePullRequest( final PullRequest pullRequest ) {
-        this.pullRequests.remove( pullRequest );
         final PullRequest pr = changeStatus( pullRequest, PullRequestStatus.CLOSED );
-        this.pullRequests.add( pr );
         return pr;
     }
 
@@ -131,7 +125,8 @@ public class PullRequestServiceMock implements PullRequestService {
                                                         pullRequest.getAuthor(),
                                                         pullRequest.getTitle(),
                                                         pullRequest.getDate(),
-                                                        status );
+                                                        status,
+                                                        pullRequest.getComments() );
         this.pullRequests.add( pr );
         return pr;
     }
@@ -156,8 +151,9 @@ public class PullRequestServiceMock implements PullRequestService {
     public List<PullRequest> getPullRequestsByStatus( final Integer page,
                                                       final Integer pageSize,
                                                       final String repository,
-                                                      final PullRequestStatus status ) {
-        final List<PullRequest> prs = this.pullRequests.stream().filter( ( pr ) -> pr.getStatus().equals( status ) ).collect( Collectors.toList() );
+                                                      final PullRequestStatus status,
+                                                      final boolean negated ) {
+        final List<PullRequest> prs = this.pullRequests.stream().filter( ( pr ) -> negated ^ pr.getStatus().equals( status ) ).collect( Collectors.toList() );
         return paginate( page, pageSize, prs );
     }
 
@@ -173,13 +169,14 @@ public class PullRequestServiceMock implements PullRequestService {
 
         final PortableFileDiff fd = new PortableFileDiff( "file/a", "file/b", 0, 0, 0, 0, "ADD", lines );
 
-        return Arrays.asList( fd );
+        return Arrays.asList( fd, fd, fd, fd );
     }
 
     @Override
     public long numberOfPullRequestsByStatus( final String repository,
-                                              final PullRequestStatus status ) {
-        return this.getPullRequestsByStatus( 0, 0, repository, status ).size();
+                                              final PullRequestStatus status,
+                                              final boolean negated ) {
+        return this.getPullRequestsByStatus( 0, 0, repository, status, negated ).size();
     }
 
     @Override

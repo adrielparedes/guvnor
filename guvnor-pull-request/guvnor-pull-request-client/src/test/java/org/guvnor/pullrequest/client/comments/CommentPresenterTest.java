@@ -16,6 +16,7 @@
 
 package org.guvnor.pullrequest.client.comments;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.guvnor.structure.repositories.Comment;
@@ -46,7 +47,9 @@ public class CommentPresenterTest {
     @Test
     public void initialize() throws Exception {
 
-        Date date = new Date();
+        final Calendar instance = Calendar.getInstance();
+        instance.set( 1977, 0, 1, 0, 0, 0 );
+        Date date = instance.getTime();
 
         when( comment.getAuthor() ).thenReturn( "author" );
         when( comment.getContent() ).thenReturn( "content" );
@@ -55,7 +58,7 @@ public class CommentPresenterTest {
         presenter.initialize( comment );
         verify( view ).setAuthor( eq( "author" ) );
         verify( view ).setContent( eq( "content" ) );
-        verify( view ).setDate( eq( "" ) );
+        verify( view ).setDate( eq( "01/01/1977 00:00:00" ) );
     }
 
 }

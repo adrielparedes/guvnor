@@ -21,6 +21,7 @@ import java.util.Date;
 
 import org.guvnor.structure.repositories.PullRequestService;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.logging.util.StringFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,5 +69,11 @@ public class PullRequestItemPresenterTest {
     public void testGeneratePath() {
         String path = presenter.generatePath( "a", "b" );
         assertEquals( "a/b", path );
+    }
+
+    @Test
+    public void testFormatText() {
+        final String formatted = StringFormat.format( "#%s %s %s", 500l, 500l, "kie" );
+        assertEquals( "#500 500 kie", formatted );
     }
 }

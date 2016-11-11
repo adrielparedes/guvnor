@@ -55,6 +55,7 @@ import javax.inject.Inject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import org.guvnor.pullrequest.client.item.PullRequestItemPresenter;
+import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.gwtbootstrap3.client.ui.html.Span;
@@ -73,6 +74,14 @@ public class PullRequestListView extends Composite implements PullRequestListPre
     @Inject
     @DataField("pull-requests-list")
     private LinkedGroup pullRequests;
+
+    @Inject
+    @DataField("open-link")
+    private Anchor openLink;
+
+    @Inject
+    @DataField("closed-link")
+    private Anchor closedLink;
 
     @Inject
     @DataField("create-pull-request")
@@ -95,6 +104,7 @@ public class PullRequestListView extends Composite implements PullRequestListPre
 
     @PostConstruct
     public void initialize() {
+        setOpenLinkString();
         pullRequests.clear();
     }
 
@@ -116,6 +126,30 @@ public class PullRequestListView extends Composite implements PullRequestListPre
     @Override
     public void clear() {
         this.pullRequests.clear();
+    }
+
+    @EventHandler("open-link")
+    public void showOpenPullRequests( final ClickEvent event ) {
+        setOpenLinkString();
+        presenter.showOpenPullRequests();
+    }
+
+    @EventHandler("closed-link")
+    public void showClosedPullRequests( final ClickEvent event ) {
+        setClosedLinkStrong();
+        presenter.showClosedPullRequests();
+    }
+
+    private void setClosedLinkStrong() {
+        final String strong = "strong";
+        this.closedLink.addStyleName( strong );
+        this.openLink.removeStyleName( strong );
+    }
+
+    private void setOpenLinkString() {
+        final String strong = "strong";
+        this.openLink.addStyleName( strong );
+        this.closedLink.removeStyleName( strong );
     }
 
     @EventHandler("create-pull-request")

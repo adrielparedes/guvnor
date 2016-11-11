@@ -16,10 +16,13 @@
 
 package org.guvnor.pullrequest.client.comments;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Image;
+import org.guvnor.pullrequest.client.resources.PullRequestResources;
 import org.gwtbootstrap3.client.ui.html.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -40,6 +43,18 @@ public class CommentView extends Composite implements CommentPresenter.View {
     @DataField("date")
     private Span date;
 
+    @Inject
+    @DataField("avatar")
+    private Image avatar;
+
+    @PostConstruct
+    public void initialize() {
+        avatar.setResource( PullRequestResources.INSTANCE.images().emptyUser() );
+        avatar.addStyleName( "avatar media-object" );
+        avatar.setWidth( "70px" );
+        avatar.setHeight( "70px" );
+    }
+
     @Override
     public void setAuthor( final String author ) {
         title.setText( author );
@@ -47,7 +62,7 @@ public class CommentView extends Composite implements CommentPresenter.View {
 
     @Override
     public void setDate( final String date ) {
-//        this.date.setText( date );
+        this.date.setText( date );
     }
 
     @Override

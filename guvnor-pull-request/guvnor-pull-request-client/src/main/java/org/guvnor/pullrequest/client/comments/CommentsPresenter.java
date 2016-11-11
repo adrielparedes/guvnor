@@ -20,14 +20,21 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.guvnor.pullrequest.client.events.StatusChanged;
+import org.guvnor.pullrequest.client.resources.i18n.Constants;
 import org.guvnor.structure.repositories.Comment;
 import org.guvnor.structure.repositories.PullRequest;
 import org.guvnor.structure.repositories.PullRequestService;
+import org.guvnor.structure.repositories.PullRequestStatus;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 
 /**
@@ -39,6 +46,9 @@ public class CommentsPresenter {
     private final Caller<PullRequestService> pullRequestService;
     private final ManagedInstance<CommentPresenter> commentPresenters;
     private final Event<NotificationEvent> notificationManager;
+    private final Event<StatusChanged> mergeEvent;
+    private final PlaceManager placeManager;
+    private final TranslationService translationService;
     private String repository;
     private long id;
 
@@ -50,6 +60,13 @@ public class CommentsPresenter {
 
         void addComment( CommentPresenter.View view );
 
+        void enableMergeButton();
+
+        void disableMergeButton();
+
+        void enableCloseButton();
+
+        void disableCloseButton();
     }
 
     private View view;
@@ -57,12 +74,18 @@ public class CommentsPresenter {
     @Inject
     public CommentsPresenter( final CommentsPresenter.View view,
                               Caller<PullRequestService> pullRequestService,
+                              TranslationService translationService,
                               ManagedInstance<CommentPresenter> commentPresenters,
-                              Event<NotificationEvent> notificationManager ) {
+                              Event<NotificationEvent> notificationManager,
+                              Event<StatusChanged> mergeEvent,
+                              PlaceManager placeManager ) {
         this.view = view;
         this.pullRequestService = pullRequestService;
         this.commentPresenters = commentPresenters;
         this.notificationManager = notificationManager;
+        this.placeManager = placeManager;
+        this.translationService = translationService;
+        this.mergeEvent = mergeEvent;
     }
 
     @PostConstruct
@@ -74,25 +97,70 @@ public class CommentsPresenter {
     public void setPullRequest( PullRequest pullRequest ) {
         this.id = pullRequest.getId();
         this.repository = pullRequest.getTargetRepository();
+        this.checkStatusAndDisableButtons( pullRequest.getStatus() );
         this.refresh();
     }
 
     public void comment( final String author,
                          final String content ) {
 
+        this.comment( author, content, o -> this.refresh() );
+    }
+
+    public void merge( final String author ) {
+
+        final String content = "Merged";
+        this.comment( author, content, o -> {
+            pullRequestService.call( ( PullRequest pr ) -> {
+                this.pullRequestService.call( accepted -> {
+                    this.refresh();
+                    mergeEvent.fire( new StatusChanged( PullRequestStatus.MERGED ) );
+                } ).acceptPullRequest( pr );
+            } ).getPullRequestByRepositoryAndId( repository, id );
+        } );
+
+    }
+
+    public void close( final String author ) {
+        final String content = "Closed";
+        this.comment( author, content, o -> {
+            pullRequestService.call( ( PullRequest pr ) -> {
+                this.pullRequestService.call( accepted -> {
+                    this.refresh();
+                    mergeEvent.fire( new StatusChanged( PullRequestStatus.CLOSED ) );
+                } ).closePullRequest( pr );
+            } ).getPullRequestByRepositoryAndId( repository, id );
+        } );
+    }
+
+    public void isMerged( @Observes StatusChanged event ) {
+        checkStatusAndDisableButtons( event.getStatus() );
+    }
+
+    protected void checkStatusAndDisableButtons( final PullRequestStatus status ) {
+        if ( !status.equals( PullRequestStatus.OPEN ) ) {
+            this.view.disableMergeButton();
+            this.view.disableCloseButton();
+        }
+    }
+
+    public void comment( final String author,
+                         final String content,
+                         final RemoteCallback<?> callback ) {
         if ( isEmpty( content ) ) {
-            notificationManager.fire( new NotificationEvent( "Content should not be empty",
+            notificationManager.fire( new NotificationEvent( translationService.format( Constants.PULL_REQUEST_COMMENTS_EMPTY_CONTENT ),
                                                              NotificationEvent.NotificationType.ERROR ) );
         }
 
         if ( isEmpty( author ) ) {
-            notificationManager.fire( new NotificationEvent( "Author should not be empty",
+            notificationManager.fire( new NotificationEvent( translationService.format( Constants.PULL_REQUEST_COMMENTS_EMPTY_AUTHOR ),
                                                              NotificationEvent.NotificationType.ERROR ) );
         }
 
         if ( !isEmpty( content ) && !isEmpty( author ) ) {
-            this.pullRequestService.call( o -> this.refresh() ).addComment( repository,
-                                                                            id, author, content );
+
+            this.pullRequestService.call( callback ).addComment( repository,
+                                                                 id, author, content );
         }
     }
 

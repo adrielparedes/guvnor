@@ -16,11 +16,14 @@
 
 package org.guvnor.pullrequest.client.comments;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Image;
+import org.guvnor.pullrequest.client.resources.PullRequestResources;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.gwtbootstrap3.client.ui.TextArea;
@@ -53,6 +56,22 @@ public class CommentsView extends Composite implements CommentsPresenter.View {
     @DataField("merge-button")
     private Button mergeButton;
 
+    @Inject
+    @DataField("close-button")
+    private Button closeButton;
+
+    @Inject
+    @DataField("avatar")
+    private Image avatar;
+
+    @PostConstruct
+    public void initialize() {
+        avatar.setResource( PullRequestResources.INSTANCE.images().emptyUser() );
+        avatar.addStyleName( "avatar media-object" );
+        avatar.setWidth( "70px" );
+        avatar.setHeight( "70px" );
+    }
+
     @Override
     public void init( CommentsPresenter presenter ) {
         this.presenter = presenter;
@@ -68,12 +87,44 @@ public class CommentsView extends Composite implements CommentsPresenter.View {
         this.comments.add( view );
     }
 
+    @Override
+    public void enableMergeButton() {
+        this.mergeButton.setEnabled( true );
+    }
+
+    @Override
+    public void disableMergeButton() {
+        this.mergeButton.setEnabled( false );
+    }
+
+    @Override
+    public void enableCloseButton() {
+        this.closeButton.setEnabled( true );
+    }
+
+    @Override
+    public void disableCloseButton() {
+        this.closeButton.setEnabled( false );
+    }
+
     @EventHandler("comment-button")
     public void handleCommentClick( final ClickEvent click ) {
         String author = "adrielparedes";
         String content = this.content.getText();
         this.presenter.comment( author, content );
         this.content.setText( "" );
+    }
+
+    @EventHandler("merge-button")
+    public void handleMergeClick( final ClickEvent click ) {
+        String author = "adrielparedes";
+        this.presenter.merge( author );
+    }
+
+    @EventHandler("close-button")
+    public void handleCloseClick( final ClickEvent click ) {
+        String author = "adrielparedes";
+        this.presenter.close( author );
     }
 
 }

@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package org.guvnor.pullrequest.client.utils;
+package org.guvnor.pullrequest.client.resources.images;
 
-public class Places {
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 
-    public final static String PULL_REQUEST_DESCRIPTION = "PullRequestDescription";
-    public static final String PULL_REQUEST_LIST = "PullRequestList";
+public interface PullRequestImageResources extends ClientBundle {
+
+    @Source("empty-user.png")
+    ImageResource emptyUser();
 }

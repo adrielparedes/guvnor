@@ -224,10 +224,10 @@ public class PullRequestServiceTest {
         service.rejectPullRequest( pullRequestB );
         service.closePullRequest( pullRequestC );
 
-        final List<PullRequest> pullRequestsMerged = service.getPullRequestsByStatus( 0, 0, "parent/a", PullRequestStatus.MERGED );
-        final List<PullRequest> pullRequestsClosed = service.getPullRequestsByStatus( 0, 0, "parent/a", PullRequestStatus.CLOSED );
-        final List<PullRequest> pullRequestsOpened = service.getPullRequestsByStatus( 0, 0, "parent/a", PullRequestStatus.OPEN );
-        final List<PullRequest> pullRequestsRejected = service.getPullRequestsByStatus( 0, 0, "parent/a", PullRequestStatus.REJECTED );
+        final List<PullRequest> pullRequestsMerged = service.getPullRequestsByStatus( 0, 0, "parent/a", PullRequestStatus.MERGED, false );
+        final List<PullRequest> pullRequestsClosed = service.getPullRequestsByStatus( 0, 0, "parent/a", PullRequestStatus.CLOSED, false );
+        final List<PullRequest> pullRequestsOpened = service.getPullRequestsByStatus( 0, 0, "parent/a", PullRequestStatus.OPEN, false );
+        final List<PullRequest> pullRequestsRejected = service.getPullRequestsByStatus( 0, 0, "parent/a", PullRequestStatus.REJECTED, false );
 
         assertEquals( 1, pullRequestsMerged.size() );
         assertEquals( 1, pullRequestsClosed.size() );

@@ -15,13 +15,12 @@
   -->
 
 <div>
-
-
     <div class="col-sm-12">
         <div class="row toolbar-pf-results">
             <div class="col-sm-11">
-                <h5 data-i18n-key="Open"><span id="open-pull-requests-size"></span> Open</h5>
-                <h5 data-i18n-key="Closed"><span id="closed-pull-requests-size"></span> Closed</h5>
+                <a id="open-link"><span id="open-pull-requests-size"></span> <span data-i18n-key="Open"></span></a>
+                <a id="closed-link"><span id="closed-pull-requests-size"></span>
+                    <span data-i18n-key="Closed"></span></a>
             </div>
             <div class="col-sm-1">
                 <button id="create-pull-request" class="btn btn-default">Mock PR</button>
@@ -35,7 +34,6 @@
             <div class="col-md-2 col-sm-3 sidebar-pf sidebar-pf-left full-height" id="second-nav"></div>
             <div class="col-md-8 col-sm-6" id="content"></div>
         </div>
-
 
         <div id="pull-requests-list" class="list-group list-view-pf list-view-pf-view">
         </div>
@@ -68,5 +66,4 @@
             </li>
         </ul>
     </div>
-
 </div>

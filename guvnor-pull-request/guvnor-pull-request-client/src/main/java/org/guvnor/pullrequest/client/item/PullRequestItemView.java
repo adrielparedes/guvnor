@@ -37,9 +37,12 @@ import javax.inject.Inject;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
+import org.guvnor.pullrequest.client.resources.i18n.Constants;
 import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.html.Span;
+import org.jboss.errai.common.client.logging.util.StringFormat;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -51,6 +54,10 @@ public class PullRequestItemView extends Composite implements PullRequestItemPre
     @Inject
     @DataField
     private Anchor title;
+
+    @Inject
+    @DataField("icon-circle")
+    private Span icon;
 
     @Inject
     @DataField
@@ -67,6 +74,9 @@ public class PullRequestItemView extends Composite implements PullRequestItemPre
     @Inject
     @DataField
     private Button review;
+
+    @Inject
+    private TranslationService translationService;
 
     private PullRequestItemPresenter presenter;
     private long id;
@@ -103,10 +113,19 @@ public class PullRequestItemView extends Composite implements PullRequestItemPre
     }
 
     @Override
+    public void setStatus( String status ) {
+        if ( status.equals( "open" ) ) {
+            this.icon.addStyleName( "primary" );
+        } else {
+            this.icon.addStyleName( "red" );
+        }
+    }
+
+    @Override
     public void setSubtitle( long id,
                              long daysAgo,
                              String username ) {
-        String subtitle = String.format( "#%d opened %d days ago by %s", id, daysAgo, username );
+        String subtitle = StringFormat.format( translationService.format( Constants.PULL_REQUEST_ITEM_VIEW_SUBTITLE ), id, daysAgo, username );
         this.subtitle.setText( subtitle );
     }
 

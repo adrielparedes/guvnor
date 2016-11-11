@@ -16,7 +16,6 @@
 
 package org.guvnor.pullrequest.client.item;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +53,8 @@ public class PullRequestItemPresenter {
         void setSubtitle( long id,
                           long daysAgo,
                           String username );
+
+        void setStatus( String s );
     }
 
     private PlaceManager placeManager;
@@ -83,11 +84,12 @@ public class PullRequestItemPresenter {
 
         this.view.init( this );
         this.view.setRepository( this.getPullRequest().getTargetRepository() );
-        this.view.setTitle( "Pull Request featuressss" );
+        this.view.setTitle( this.getPullRequest().getTitle() );
         this.view.setSubtitle( this.getPullRequest().getId(), this.calculateDaysAgo( this.getPullRequest().getDate() ), this.getPullRequest().getAuthor() );
         this.view.setId( this.getPullRequest().getId() );
         this.view.setFrom( generatePath( this.getPullRequest().getSourceRepository(), this.getPullRequest().getSourceBranch() ) );
         this.view.setTo( this.generatePath( this.getPullRequest().getTargetRepository(), this.getPullRequest().getTargetBranch() ) );
+        this.view.setStatus( this.getPullRequest().getStatus().toString().toLowerCase() );
     }
 
     protected String generatePath( String repository,
@@ -96,7 +98,7 @@ public class PullRequestItemPresenter {
     }
 
     protected long calculateDaysAgo( final Date date ) {
-        long diff = Calendar.getInstance().getTime().getTime() - date.getTime();
+        long diff = new Date().getTime() - date.getTime();
         return diff / ( 1000 * 60 * 60 * 24 );
     }
 

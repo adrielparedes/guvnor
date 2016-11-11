@@ -19,11 +19,13 @@ package org.guvnor.pullrequest.client.description;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.pullrequest.client.comments.CommentsPresenter;
 import org.guvnor.pullrequest.client.diff.DiffsPresenter;
+import org.guvnor.pullrequest.client.events.StatusChanged;
 import org.guvnor.structure.repositories.PullRequest;
 import org.guvnor.structure.repositories.PullRequestService;
 import org.jboss.errai.common.client.api.Caller;
@@ -40,6 +42,8 @@ public class PullRequestDescriptionPresenter {
     public static final String PULL_REQUESTS_DESCRIPTION_TITLE = "Pull Requests Description";
     private final Caller<PullRequestService> pullRequestService;
     private PlaceRequest place;
+    private long id;
+    private String repository;
 
     public interface View extends IsWidget {
 
@@ -89,9 +93,13 @@ public class PullRequestDescriptionPresenter {
 
     public void setup( final Map<String, String> parameters ) {
 
-        final long id = Long.parseLong( parameters.get( "id" ) );
-        final String repository = parameters.get( "repository" );
+        this.id = Long.parseLong( parameters.get( "id" ) );
+        this.repository = parameters.get( "repository" );
 
+        refresh();
+    }
+
+    private void refresh() {
         pullRequestService.call( ( PullRequest pr ) -> {
             this.view.setId( pr.getId() );
             this.view.setTitle( pr.getTitle() );
@@ -107,6 +115,10 @@ public class PullRequestDescriptionPresenter {
     private String buildRepoName( String repository,
                                   String branch ) {
         return repository + "/" + branch;
+    }
+
+    public void onStatusChange( @Observes final StatusChanged statusChanged ) {
+        this.refresh();
     }
 
     @WorkbenchPartTitle

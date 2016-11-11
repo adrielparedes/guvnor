@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-package org.guvnor.pullrequest.client.utils;
+.fa.fa-code-fork.list-view-pf-icon-sm.primary {
+    border: 2px solid #0088ce;
+}
 
-public class Places {
+.fa.fa-code-fork.list-view-pf-icon-sm.red {
+    border: 2px solid #cc0000;
+}
 
-    public final static String PULL_REQUEST_DESCRIPTION = "PullRequestDescription";
-    public static final String PULL_REQUEST_LIST = "PullRequestList";
+.list-view-pf.list-view-pf-description.list-group-item-heading {
+    width: calc(75% - 20px) !important;
+}
+
+.list-view-pf.list-view-pf-description.list-group-item-text {
+    width: calc(25% - 40px) !important;
+}
+
+.list-view-pf-additional-info {
+    width: 25%;
 }

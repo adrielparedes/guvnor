@@ -16,9 +16,11 @@
 
 package org.guvnor.pullrequest.client.comments;
 
+import java.util.Date;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.structure.repositories.Comment;
 
@@ -49,7 +51,10 @@ public class CommentPresenter {
     }
 
     private String getDate( final Comment comment ) {
-        return comment.getDate().toString();
+        final DateTimeFormat format = DateTimeFormat.getFormat( "MM/dd/yyyy HH:mm:ss" );
+        final Date date = comment.getDate();
+        return format.format( date );
+
     }
 
     public View getView() {

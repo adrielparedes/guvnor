@@ -107,12 +107,14 @@ public interface PullRequestService {
      * @param pageSize the number of pull requests per page
      * @param repository the repository used as filter
      * @param status the status used as filter
+     * @param negated if true it returns all the pull requests but those with status
      * @return the page of pull requests filtered by repository
      */
     List<PullRequest> getPullRequestsByStatus( Integer page,
                                                Integer pageSize,
                                                String repository,
-                                               PullRequestStatus status );
+                                               PullRequestStatus status,
+                                               boolean negated );
 
     /**
      * Obtains differences between all files involved in the pull request.
@@ -125,10 +127,12 @@ public interface PullRequestService {
      * Returns the number of pull requests by a given Status and the target repository.
      * @param repository the target repository where pull requests are generated.
      * @param status the status to filter pull requests.
+     * @param negated if true it counts over pull request that does not contains the status param.
      * @return the number of pull requests.
      */
     long numberOfPullRequestsByStatus( String repository,
-                                       PullRequestStatus status );
+                                       PullRequestStatus status,
+                                       boolean negated );
 
     PullRequest getPullRequestByRepositoryAndId( String targetRepository,
                                                  long id );

@@ -16,6 +16,10 @@
 
 package org.guvnor.pullrequest.client.diff;
 
+/**
+ * Represents the type of a diff source code line.
+ * This is useful to identify a line in a view component.
+ */
 public enum LineType {
     ADD, REMOVE, NONE
 }

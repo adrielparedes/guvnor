@@ -22,7 +22,7 @@
     <div class="media">
         <div class="media-left">
             <a href="#">
-                <img class="avatar media-object" src="images/empty-user.png" alt="...">
+                <img id="avatar" class="avatar media-object" src="images/empty-user.png" alt="...">
             </a>
         </div>
         <div class="media-body">
@@ -35,8 +35,9 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-12">
-                            <button id="comment-button" class="pull-right btn btn-primary">Comment</button>
-                            <button id="merge-button" class="pull-right btn btn-success">Comment & Merge</button>
+                            <button id="comment-button" class="pull-right btn btn-primary" data-i18n-key="Comment"></button>
+                            <button id="merge-button" class="pull-right btn btn-success" data-i18n-key="Merge"></button>
+                            <button id="close-button" class="pull-right btn btn-success" data-i18n-key="Close"></button>
                         </div>
                     </div>
                 </form>

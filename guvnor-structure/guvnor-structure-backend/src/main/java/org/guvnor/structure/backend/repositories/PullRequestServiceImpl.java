@@ -214,10 +214,11 @@ public class PullRequestServiceImpl implements PullRequestService {
     public List<PullRequest> getPullRequestsByStatus( Integer page,
                                                       Integer pageSize,
                                                       final String repository,
-                                                      final PullRequestStatus status ) {
+                                                      final PullRequestStatus status,
+                                                      final boolean negated ) {
 
         final List<PullRequest> pullRequests = this.getPullRequestsByRepository( page, pageSize, repository );
-        final List<PullRequest> finalPullRequests = pullRequests.stream().filter( elem -> elem.getStatus().equals( status ) ).collect( Collectors.toList() );
+        final List<PullRequest> finalPullRequests = pullRequests.stream().filter( elem -> negated ^ elem.getStatus().equals( status ) ).collect( Collectors.toList() );
         return this.paginate( page, pageSize, finalPullRequests );
 
     }
@@ -278,8 +279,9 @@ public class PullRequestServiceImpl implements PullRequestService {
 
     @Override
     public long numberOfPullRequestsByStatus( final String repository,
-                                              final PullRequestStatus status ) {
-        return this.getPullRequestsByStatus( 0, 0, repository, status ).size();
+                                              final PullRequestStatus status,
+                                              final boolean negated ) {
+        return this.getPullRequestsByStatus( 0, 0, repository, status, negated ).size();
     }
 
     @Override

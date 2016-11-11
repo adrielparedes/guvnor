@@ -22,11 +22,13 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.Composite;
 import org.guvnor.pullrequest.client.comments.CommentsPresenter;
 import org.guvnor.pullrequest.client.diff.DiffsPresenter;
+import org.guvnor.pullrequest.client.resources.i18n.Constants;
 import org.gwtbootstrap3.client.ui.NavTabs;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPane;
 import org.gwtbootstrap3.client.ui.html.Span;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -66,6 +68,9 @@ public class PullRequestDescriptionView extends Composite implements PullRequest
     @DataField("status")
     private Span status;
 
+    @Inject
+    private TranslationService translationService;
+
     private PullRequestDescriptionPresenter presenter;
 
     @Inject
@@ -90,13 +95,13 @@ public class PullRequestDescriptionView extends Composite implements PullRequest
         content.add( commentsPane );
         content.add( diffsPane );
 
-        tabs.add( new TabListItem( "Comments" ) {{
+        tabs.add( new TabListItem( translationService.format( Constants.PULL_REQUEST_DESCRIPTION_COMMENTS ) ) {{
             addStyleName( "uf-dropdown-tab-list-item" );
             setDataTargetWidget( commentsPane );
             setActive( true );
         }} );
 
-        tabs.add( new TabListItem( "Diffs" ) {{
+        tabs.add( new TabListItem( translationService.format( Constants.PULL_REQUEST_DESCRIPTION_DIFFS ) ) {{
             addStyleName( "uf-dropdown-tab-list-item" );
             setDataTargetWidget( diffsPane );
         }} );
@@ -107,7 +112,7 @@ public class PullRequestDescriptionView extends Composite implements PullRequest
 
     @Override
     public void setId( final long l ) {
-        this.id.setText( String.valueOf( l ) );
+        this.id.setText( "#" + String.valueOf( l ) );
     }
 
     @Override
@@ -132,6 +137,18 @@ public class PullRequestDescriptionView extends Composite implements PullRequest
 
     @Override
     public void setStatus( final String status ) {
-        this.status.setText( status );
+        if ( status.toLowerCase().equals( "open" ) ) {
+            this.status.addStyleName( "label label-primary" );
+            this.status.removeStyleName( "label-danger" );
+        } else {
+            this.status.addStyleName( "label label-danger" );
+            this.status.removeStyleName( "label-primary" );
+        }
+        this.status.setText( capitalize( status.toLowerCase() ) );
+
+    }
+
+    protected String capitalize( String input ) {
+        return input.substring( 0, 1 ).toUpperCase() + input.substring( 1 );
     }
 }

@@ -51,15 +51,18 @@ package org.guvnor.pullrequest.client.list;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.guvnor.pullrequest.client.events.StatusChanged;
 import org.guvnor.pullrequest.client.item.PullRequestItemPresenter;
 import org.guvnor.pullrequest.client.resources.i18n.Constants;
 import org.guvnor.structure.repositories.PullRequest;
 import org.guvnor.structure.repositories.PullRequestService;
 import org.guvnor.structure.repositories.PullRequestStatus;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -75,6 +78,7 @@ public class PullRequestListPresenter {
 
     private ManagedInstance<PullRequestItemPresenter> itemPresenters;
     private Caller<PullRequestService> pullRequestService;
+    private boolean negated;
 
     public interface View extends IsWidget {
 
@@ -108,25 +112,31 @@ public class PullRequestListPresenter {
     }
 
     public void refresh() {
-        final String repository = "";
-
+        final String repository = "target";
         this.view.clear();
-        pullRequestService.call( size -> {
-            view.setNumberOfOpenPullRequests( (Long) size );
-        } ).numberOfPullRequestsByStatus( repository, PullRequestStatus.OPEN );
+        refreshPullRequestsCount( repository, PullRequestStatus.OPEN, false, view::setNumberOfOpenPullRequests );
+        refreshPullRequestsCount( repository, PullRequestStatus.OPEN, true, view::setNumberOfClosedPullRequests );
+        refreshPullRequestsByStatus( PullRequestStatus.OPEN, repository, this.negated );
+    }
 
-        pullRequestService.call( size -> {
-            view.setNumberOfClosedPullRequests( (Long) size );
-        } ).numberOfPullRequestsByStatus( repository, PullRequestStatus.MERGED );
+    private void refreshPullRequestsCount( final String repository,
+                                           PullRequestStatus status,
+                                           boolean negated,
+                                           RemoteCallback<Long> callback ) {
+        pullRequestService.call( callback ).numberOfPullRequestsByStatus( repository, status, negated );
+    }
 
+    private void refreshPullRequestsByStatus( final PullRequestStatus status,
+                                              final String repository,
+                                              final boolean negated ) {
         pullRequestService
                 .call( prs -> {
                     showPullRequests( (List<PullRequest>) prs );
                 } )
-                .getPullRequestsByStatus( 0, 0, repository, PullRequestStatus.OPEN );
+                .getPullRequestsByStatus( 0, 0, repository, status, negated );
     }
 
-    private void showPullRequests( final List<PullRequest> prs ) {
+    protected void showPullRequests( final List<PullRequest> prs ) {
         prs.forEach( ( pr ) -> {
             final PullRequestItemPresenter pullRequestItemPresenter = itemPresenters.get();
             pullRequestItemPresenter.setPullRequest( pr );
@@ -140,6 +150,20 @@ public class PullRequestListPresenter {
             refresh();
         } ).createPullRequest( "source", "a", "target", "b", "adrielparedes", "[GUVNOR-123] Pull Request Mock Title" );
 
+    }
+
+    public void showOpenPullRequests() {
+        this.negated = false;
+        this.refresh();
+    }
+
+    public void showClosedPullRequests() {
+        this.negated = true;
+        this.refresh();
+    }
+
+    public void onStatusChange( @Observes final StatusChanged statusChanged ) {
+        this.refresh();
     }
 
     @WorkbenchPartTitle

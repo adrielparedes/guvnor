@@ -24,12 +24,15 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.structure.repositories.PortableFileDiff;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.slf4j.Logger;
+import org.uberfire.client.mvp.PlaceManager;
 
 @Dependent
 public class FileDiffPresenter {
 
     private final ManagedInstance<LineDiffPresenter> lineDiffPresenters;
     private final Logger logger;
+    //    private final Caller<VFSService> vfsServiceCaller;
+    private final PlaceManager placeManager;
 
     public interface View extends IsWidget {
 
@@ -41,10 +44,14 @@ public class FileDiffPresenter {
     @Inject
     public FileDiffPresenter( FileDiffPresenter.View view,
                               Logger logger,
+//                              Caller<VFSService> vfsService,
+                              PlaceManager placeManager,
                               ManagedInstance<LineDiffPresenter> lineDiffPresenters ) {
         this.view = view;
         this.logger = logger;
         this.lineDiffPresenters = lineDiffPresenters;
+//        this.vfsServiceCaller = vfsService;
+        this.placeManager = placeManager;
     }
 
     public void initialize( final PortableFileDiff diff ) {
@@ -58,6 +65,18 @@ public class FileDiffPresenter {
         } );
 
     }
+
+//    public void openFile( String uri ) {
+//        vfsServiceCaller.call( new RemoteCallback<Path>() {
+//            @Override
+//            public void callback( Path path ) {
+//                openBestSuitedScreen( event.getEventType(),
+//                                      path );
+//                placeManager.goTo( path );
+//            }
+//        } )
+//                .get( uri );
+//    }
 
     public View getView() {
         return this.view;
