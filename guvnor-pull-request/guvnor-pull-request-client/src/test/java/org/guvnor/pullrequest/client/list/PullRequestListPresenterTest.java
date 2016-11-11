@@ -84,4 +84,40 @@ public class PullRequestListPresenterTest {
         verify( view, times( 1 ) ).addPullRequest( any() );
     }
 
+    @Test
+    public void testPagination() {
+        for ( int i = 0; i < 11; i++ ) {
+            serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-" + i );
+        }
+        presenter.calculatePaginatorSize();
+        verify( view ).setPaginator( 2 );
+
+    }
+
+    @Test
+    public void testClosedStatusWithZeroElementsPagination() {
+        for ( int i = 0; i < 11; i++ ) {
+            serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-" + i );
+        }
+        presenter.showClosedPullRequests();
+        presenter.calculatePaginatorSize();
+        verify( view ).setPaginator( 1 );
+    }
+
+    @Test
+    public void testClosedStatusPagination() {
+        boolean flag = true;
+        for ( int i = 0; i < 30; i++ ) {
+            final PullRequest pr = serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-" + i );
+            if ( flag ) {
+                serviceMock.acceptPullRequest( pr );
+            }
+            flag = !flag;
+
+        }
+        presenter.showClosedPullRequests();
+        presenter.calculatePaginatorSize();
+        verify( view ).setPaginator( 2 );
+    }
+
 }

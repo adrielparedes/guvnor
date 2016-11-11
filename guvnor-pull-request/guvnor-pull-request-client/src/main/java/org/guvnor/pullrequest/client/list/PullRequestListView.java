@@ -128,6 +128,11 @@ public class PullRequestListView extends Composite implements PullRequestListPre
         this.pullRequests.clear();
     }
 
+    @Override
+    public void setPaginator( final long i ) {
+        
+    }
+
     @EventHandler("open-link")
     public void showOpenPullRequests( final ClickEvent event ) {
         setOpenLinkString();

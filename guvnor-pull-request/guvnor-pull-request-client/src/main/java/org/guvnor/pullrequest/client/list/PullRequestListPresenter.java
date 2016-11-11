@@ -75,10 +75,13 @@ public class PullRequestListPresenter {
 
     private final TranslationService translationService;
     private View view;
+    final long pageSize = 10;
 
     private ManagedInstance<PullRequestItemPresenter> itemPresenters;
     private Caller<PullRequestService> pullRequestService;
     private boolean negated;
+    private int openStatusPages;
+    private String repository;
 
     public interface View extends IsWidget {
 
@@ -91,6 +94,8 @@ public class PullRequestListPresenter {
         void setNumberOfClosedPullRequests( long number );
 
         void clear();
+
+        void setPaginator( long i );
     }
 
     @Inject
@@ -107,12 +112,12 @@ public class PullRequestListPresenter {
     @PostConstruct
     public void initialize() {
 
+        repository = "target";
         view.init( this );
         this.refresh();
     }
 
     public void refresh() {
-        final String repository = "target";
         this.view.clear();
         refreshPullRequestsCount( repository, PullRequestStatus.OPEN, false, view::setNumberOfOpenPullRequests );
         refreshPullRequestsCount( repository, PullRequestStatus.OPEN, true, view::setNumberOfClosedPullRequests );
@@ -160,6 +165,12 @@ public class PullRequestListPresenter {
     public void showClosedPullRequests() {
         this.negated = true;
         this.refresh();
+    }
+
+    public void calculatePaginatorSize() {
+        pullRequestService.call( ( Long size ) -> {
+            view.setPaginator( ( size + pageSize - 1 ) / pageSize );
+        } ).numberOfPullRequestsByStatus( repository, PullRequestStatus.OPEN, negated );
     }
 
     public void onStatusChange( @Observes final StatusChanged statusChanged ) {
