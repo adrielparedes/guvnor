@@ -75,6 +75,9 @@ public class PullRequestListView extends Composite implements PullRequestListPre
     @DataField("pull-requests-list")
     private LinkedGroup pullRequests;
 
+//    @DataField("paginator")c
+//    private Element paginator = DOM.createElement( "ul" );
+
     @Inject
     @DataField("open-link")
     private Anchor openLink;
@@ -129,8 +132,8 @@ public class PullRequestListView extends Composite implements PullRequestListPre
     }
 
     @Override
-    public void setPaginator( final long i ) {
-        
+    public void setPaginator( final int i ) {
+//        paginator.insertFirst( DOM.createElement( "" ) );
     }
 
     @EventHandler("open-link")

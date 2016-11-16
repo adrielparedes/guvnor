@@ -91,7 +91,6 @@ public class CommentsPresenter {
     @PostConstruct
     public void initialize() {
         this.view.init( this );
-
     }
 
     public void setPullRequest( PullRequest pullRequest ) {
@@ -138,7 +137,10 @@ public class CommentsPresenter {
     }
 
     protected void checkStatusAndDisableButtons( final PullRequestStatus status ) {
-        if ( !status.equals( PullRequestStatus.OPEN ) ) {
+        if ( status.equals( PullRequestStatus.OPEN ) ) {
+            this.view.enableCloseButton();
+            this.view.enableMergeButton();
+        } else {
             this.view.disableMergeButton();
             this.view.disableCloseButton();
         }

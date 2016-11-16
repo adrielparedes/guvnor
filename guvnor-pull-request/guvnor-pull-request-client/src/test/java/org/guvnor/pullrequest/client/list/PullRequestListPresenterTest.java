@@ -60,17 +60,16 @@ public class PullRequestListPresenterTest {
 
         when( itemPresenters.get() ).thenReturn( mock( PullRequestItemPresenter.class ) );
 
+    }
+
+    @Test
+    public void testShowOpenPullRequests() {
         final PullRequest pr1 = serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-1" );
         final PullRequest pr2 = serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-2" );
         final PullRequest pr3 = serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-3" );
         final PullRequest pr4 = serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-4" );
 
         serviceMock.acceptPullRequest( pr3 );
-
-    }
-
-    @Test
-    public void testShowOpenPullRequests() {
         presenter.showOpenPullRequests();
         verify( view, times( 2 ) ).clear();
         verify( view, times( 3 ) ).addPullRequest( any() );
@@ -78,6 +77,12 @@ public class PullRequestListPresenterTest {
 
     @Test
     public void testShowClosedPullRequests() {
+        final PullRequest pr1 = serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-1" );
+        final PullRequest pr2 = serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-2" );
+        final PullRequest pr3 = serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-3" );
+        final PullRequest pr4 = serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-4" );
+
+        serviceMock.acceptPullRequest( pr3 );
         presenter.showClosedPullRequests();
         assertEquals( 1, serviceMock.getPullRequestsByStatus( 0, 0, "target", PullRequestStatus.OPEN, true ).size() );
         verify( view, times( 2 ) ).clear();
@@ -100,8 +105,7 @@ public class PullRequestListPresenterTest {
             serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-" + i );
         }
         presenter.showClosedPullRequests();
-        presenter.calculatePaginatorSize();
-        verify( view ).setPaginator( 1 );
+        verify( view, times( 2 ) ).setPaginator( 0 );
     }
 
     @Test
@@ -116,7 +120,6 @@ public class PullRequestListPresenterTest {
 
         }
         presenter.showClosedPullRequests();
-        presenter.calculatePaginatorSize();
         verify( view ).setPaginator( 2 );
     }
 

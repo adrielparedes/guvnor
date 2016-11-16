@@ -211,7 +211,7 @@ public class PullRequestServiceMock implements PullRequestService {
                 .collect( toMap( i -> i / finalPageSize,
                                  i -> pullRequests.subList( i, min( i + finalPageSize, pullRequests.size() ) ) ) );
 
-        return map.getOrDefault( page, new ArrayList<>() );
+        return new ArrayList<>( map.getOrDefault( page, new ArrayList<>() ) );
 
     }
 

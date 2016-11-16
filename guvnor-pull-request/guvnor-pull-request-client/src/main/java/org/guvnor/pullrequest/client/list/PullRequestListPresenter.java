@@ -75,13 +75,13 @@ public class PullRequestListPresenter {
 
     private final TranslationService translationService;
     private View view;
-    final long pageSize = 10;
+    final int pageSize = 10;
 
     private ManagedInstance<PullRequestItemPresenter> itemPresenters;
     private Caller<PullRequestService> pullRequestService;
     private boolean negated;
-    private int openStatusPages;
     private String repository;
+    private Integer selectedPage;
 
     public interface View extends IsWidget {
 
@@ -95,7 +95,7 @@ public class PullRequestListPresenter {
 
         void clear();
 
-        void setPaginator( long i );
+        void setPaginator( int i );
     }
 
     @Inject
@@ -112,13 +112,16 @@ public class PullRequestListPresenter {
     @PostConstruct
     public void initialize() {
 
-        repository = "target";
-        view.init( this );
+        this.repository = "target";
+        this.negated = false;
+        this.selectedPage = 0;
+        this.view.init( this );
         this.refresh();
     }
 
     public void refresh() {
         this.view.clear();
+        this.calculatePaginatorSize();
         refreshPullRequestsCount( repository, PullRequestStatus.OPEN, false, view::setNumberOfOpenPullRequests );
         refreshPullRequestsCount( repository, PullRequestStatus.OPEN, true, view::setNumberOfClosedPullRequests );
         refreshPullRequestsByStatus( PullRequestStatus.OPEN, repository, this.negated );
@@ -138,7 +141,7 @@ public class PullRequestListPresenter {
                 .call( prs -> {
                     showPullRequests( (List<PullRequest>) prs );
                 } )
-                .getPullRequestsByStatus( 0, 0, repository, status, negated );
+                .getPullRequestsByStatus( this.selectedPage, pageSize, repository, status, negated );
     }
 
     protected void showPullRequests( final List<PullRequest> prs ) {
@@ -169,7 +172,7 @@ public class PullRequestListPresenter {
 
     public void calculatePaginatorSize() {
         pullRequestService.call( ( Long size ) -> {
-            view.setPaginator( ( size + pageSize - 1 ) / pageSize );
+            view.setPaginator( (int) ( size + pageSize - 1 ) / pageSize );
         } ).numberOfPullRequestsByStatus( repository, PullRequestStatus.OPEN, negated );
     }
 

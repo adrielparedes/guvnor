@@ -19,6 +19,8 @@ package org.guvnor.pullrequest.client.description;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import org.guvnor.pullrequest.client.comments.CommentsPresenter;
 import org.guvnor.pullrequest.client.diff.DiffsPresenter;
@@ -137,12 +139,13 @@ public class PullRequestDescriptionView extends Composite implements PullRequest
 
     @Override
     public void setStatus( final String status ) {
+        final Element label = DOM.getElementById( "label" );
         if ( status.toLowerCase().equals( "open" ) ) {
-            this.status.addStyleName( "label label-primary" );
-            this.status.removeStyleName( "label-danger" );
+            label.removeClassName( "label-danger" );
+            label.setClassName( "label label-success" );
         } else {
-            this.status.addStyleName( "label label-danger" );
-            this.status.removeStyleName( "label-primary" );
+            label.removeClassName( "label-success" );
+            label.setClassName( "label label-danger" );
         }
         this.status.setText( capitalize( status.toLowerCase() ) );
 
