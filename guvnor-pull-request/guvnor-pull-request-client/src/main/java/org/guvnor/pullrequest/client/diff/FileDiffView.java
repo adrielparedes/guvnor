@@ -16,13 +16,15 @@
 
 package org.guvnor.pullrequest.client.diff;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
+import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Dependent
@@ -33,13 +35,36 @@ public class FileDiffView extends Composite implements FileDiffPresenter.View {
     @DataField("lines")
     private LinkedGroup lines;
 
-    @PostConstruct
-    public void initialize() {
-        lines.clear();
+    @Inject
+    @DataField("local")
+    private Anchor local;
+
+    @Inject
+    @DataField("remote")
+    private Anchor remote;
+    private FileDiffPresenter presenter;
+
+    @Override
+    public void initialize( FileDiffPresenter presenter ) {
+
+        this.presenter = presenter;
+        this.lines.clear();
+        this.remote.setText( "src/main/local.java" );
+        this.local.setText( "src/main/remote.java" );
     }
 
     @Override
     public void addLine( final LineDiffPresenter.View view ) {
-        lines.add( view );
+        this.lines.add( view );
+    }
+
+    @EventHandler("local")
+    public void handleLocalLinkClick( ClickEvent event ) {
+        this.presenter.openFile( "master", "repo/readme.md" );
+    }
+
+    @EventHandler("remote")
+    public void handleRemoteLinkClick( ClickEvent event ) {
+        this.presenter.openFile( "master", "repo/readme.md" );
     }
 }

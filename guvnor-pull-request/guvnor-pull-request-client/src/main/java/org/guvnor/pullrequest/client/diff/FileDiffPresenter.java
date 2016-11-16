@@ -22,19 +22,25 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.structure.repositories.PortableFileDiff;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
-import org.slf4j.Logger;
+import org.uberfire.backend.vfs.Path;
+import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.mvp.PlaceManager;
+
+import static org.uberfire.commons.validation.PortablePreconditions.*;
 
 @Dependent
 public class FileDiffPresenter {
 
     private final ManagedInstance<LineDiffPresenter> lineDiffPresenters;
-    private final Logger logger;
-    //    private final Caller<VFSService> vfsServiceCaller;
+    private final Caller<VFSService> vfsServiceCaller;
     private final PlaceManager placeManager;
 
     public interface View extends IsWidget {
+
+        void initialize( FileDiffPresenter presenter );
 
         void addLine( LineDiffPresenter.View view );
     }
@@ -43,21 +49,20 @@ public class FileDiffPresenter {
 
     @Inject
     public FileDiffPresenter( FileDiffPresenter.View view,
-                              Logger logger,
-//                              Caller<VFSService> vfsService,
+                              Caller<VFSService> vfsService,
                               PlaceManager placeManager,
                               ManagedInstance<LineDiffPresenter> lineDiffPresenters ) {
         this.view = view;
-        this.logger = logger;
         this.lineDiffPresenters = lineDiffPresenters;
-//        this.vfsServiceCaller = vfsService;
+        this.vfsServiceCaller = vfsService;
         this.placeManager = placeManager;
     }
 
     public void initialize( final PortableFileDiff diff ) {
 
+        this.view.initialize( this );
+
         final List<String> lines = diff.getLines();
-        logger.info( "{}", lines );
         lines.forEach( ( line ) -> {
             final LineDiffPresenter presenter = lineDiffPresenters.get();
             presenter.setLine( line, 1l );
@@ -66,17 +71,19 @@ public class FileDiffPresenter {
 
     }
 
-//    public void openFile( String uri ) {
-//        vfsServiceCaller.call( new RemoteCallback<Path>() {
-//            @Override
-//            public void callback( Path path ) {
-//                openBestSuitedScreen( event.getEventType(),
-//                                      path );
-//                placeManager.goTo( path );
-//            }
-//        } )
-//                .get( uri );
-//    }
+    public void openFile( String branch,
+                          String uri ) {
+
+        checkNotEmpty( "branch", branch );
+        checkNotEmpty( "uri", uri );
+
+        vfsServiceCaller.call( new RemoteCallback<Path>() {
+            @Override
+            public void callback( Path path ) {
+                placeManager.goTo( path );
+            }
+        } ).get( "default://" + branch + "@" + uri );
+    }
 
     public View getView() {
         return this.view;

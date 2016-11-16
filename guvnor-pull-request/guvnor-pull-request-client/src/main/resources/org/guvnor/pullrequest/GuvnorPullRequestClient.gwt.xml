@@ -22,6 +22,8 @@
   <inherits name="org.uberfire.UberfireClientAPI"/>
   <inherits name="org.jboss.errai.common.ErraiCommon"/>
   <inherits name="org.uberfire.UberfireClientAll"/>
+  <inherits name="org.uberfire.UberfireBackend"/>
+  <inherits name="org.uberfire.UberfireClientBackend"/>
   <inherits name="org.guvnor.structure.GuvnorStructureAPI"/>
 
   <source path='client'/>
