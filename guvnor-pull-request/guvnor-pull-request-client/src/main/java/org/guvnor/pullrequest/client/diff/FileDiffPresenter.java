@@ -28,6 +28,7 @@ import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.commons.data.Pair;
 
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
@@ -61,14 +62,40 @@ public class FileDiffPresenter {
     public void initialize( final PortableFileDiff diff ) {
 
         this.view.initialize( this );
+        showLines( diff );
+    }
 
+    protected void showLines( final PortableFileDiff diff ) {
         final List<String> lines = diff.getLines();
-        lines.forEach( ( line ) -> {
-            final LineDiffPresenter presenter = lineDiffPresenters.get();
-            presenter.setLine( line, 1l );
-            this.getView().addLine( presenter.getView() );
-        } );
+        Pair<Integer, Integer> lineNumber = new Pair<>( diff.getStartA(), diff.getStartB() );
+        for ( String line : lines ) {
+            if ( isVisibleLine( line ) ) {
+                final LineDiffPresenter presenter = lineDiffPresenters.get();
+                presenter.setLine( line, lineNumber.getK1(), lineNumber.getK2() );
+                lineNumber = incrementLineNumber( lineNumber, line );
+                this.getView().addLine( presenter.getView() );
+            }
+        }
+    }
 
+    protected Pair<Integer, Integer> incrementLineNumber( Pair<Integer, Integer> lineNumber,
+                                                          final String line ) {
+        if ( line.startsWith( "+" ) ) {
+            lineNumber = incrementB( lineNumber );
+        } else if ( line.startsWith( "-" ) ) {
+            lineNumber = incrementA( lineNumber );
+        } else {
+            lineNumber = incrementB( incrementA( lineNumber ) );
+        }
+        return lineNumber;
+    }
+
+    private Pair<Integer, Integer> incrementA( final Pair<Integer, Integer> lineNumber ) {
+        return new Pair<Integer, Integer>( lineNumber.getK1() + 1, lineNumber.getK2() );
+    }
+
+    private Pair<Integer, Integer> incrementB( final Pair<Integer, Integer> lineNumber ) {
+        return new Pair<Integer, Integer>( lineNumber.getK1(), lineNumber.getK2() + 1 );
     }
 
     public void openFile( String branch,
@@ -87,6 +114,14 @@ public class FileDiffPresenter {
 
     public View getView() {
         return this.view;
+    }
+
+    protected boolean isVisibleLine( final String line ) {
+        return !line.trim().startsWith( "+++" ) &&
+                !line.trim().startsWith( "---" ) &&
+                !line.trim().startsWith( "index" ) &&
+                !line.trim().matches( "@@.*@@" ) &&
+                !line.trim().matches( "diff --git.*" );
     }
 
 }

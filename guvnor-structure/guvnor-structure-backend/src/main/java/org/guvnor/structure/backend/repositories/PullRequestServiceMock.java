@@ -161,13 +161,20 @@ public class PullRequestServiceMock implements PullRequestService {
     public List<PortableFileDiff> diff( final PullRequest pullRequest ) {
 
         final ArrayList<String> lines = new ArrayList<>();
-        lines.add( "+ public void main(){" );
-        lines.add( "public void main(){" );
-        lines.add( "- roberto" );
-        lines.add( "+ juan" );
-        lines.add( "}" );
-
-        final PortableFileDiff fd = new PortableFileDiff( "file/a", "file/b", 0, 0, 0, 0, "ADD", lines );
+        final String diff = "diff --git a/README.md b/README.md\n" +
+                "index 4e306a6..b75feb6 100644\n" +
+                "--- a/README.md\n" +
+                "+++ b/README.md\n" +
+                "@@ -1,1148 +1,38 @@\n" +
+                "-# reveal.js [![Build Status](https://travis-ci.org/hakimel/reveal.js.svg?branch=master)](https://travis-ci.org/hakimel/reveal.js) <a href=\"https://slides.com?ref=github\"><img src=\"https://s3.a\n" +
+                "-mazonaws.com/static.slid.es/images/slides-github-banner-320x40.png?1\" alt=\"Slides\" width=\"160\" height=\"20\"></a>\n" +
+                "+# JBugBA Reveal.js\n" +
+                " \n" +
+                "-A framework for easily creating beautiful presentations using HTML. [Check out the live demo](http://lab.hakim.se/reveal-js/).\n" +
+                "+Se cambian un poco los estilos para poder utilizar los colores y la tipografia de la\n" +
+                "+comunidad. Ademas hay dos tempates que usan los estilos de JBugBA.\n";
+        lines.addAll( Arrays.asList( diff.split( "\n" ) ) );
+        final PortableFileDiff fd = new PortableFileDiff( "file/a", "file/b", 1, 15, 1, 13, "ADD", lines );
 
         return Arrays.asList( fd, fd, fd, fd );
     }

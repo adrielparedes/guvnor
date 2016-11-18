@@ -16,7 +16,6 @@
 
 package org.guvnor.pullrequest.client.diff;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -44,23 +43,24 @@ public class LineDiffView extends Composite implements LineDiffPresenter.View {
     @Override
     public void setLine( final LineType lineType,
                          final String text,
-                         final long lineNumber ) {
+                         final long lineNumberA,
+                         final long lineNumberB ) {
 
         if ( LineType.ADD.equals( lineType ) ) {
             line.addStyleName( "add" );
-            lineNumberRight.setText( String.valueOf( lineNumber ) );
+            lineNumberRight.setText( String.valueOf( lineNumberB ) );
             lineNumberLeft.setText( "-" );
         }
 
         if ( LineType.REMOVE.equals( lineType ) ) {
             line.addStyleName( "remove" );
-            lineNumberLeft.setText( String.valueOf( lineNumber ) );
+            lineNumberLeft.setText( String.valueOf( lineNumberA ) );
             lineNumberRight.setText( "-" );
         }
 
         if ( LineType.NONE.equals( lineType ) ) {
-            lineNumberLeft.setText( String.valueOf( lineNumber ) );
-            lineNumberRight.setText( String.valueOf( lineNumber ) );
+            lineNumberLeft.setText( String.valueOf( lineNumberA ) );
+            lineNumberRight.setText( String.valueOf( lineNumberB ) );
         }
 
         line.setText( text );

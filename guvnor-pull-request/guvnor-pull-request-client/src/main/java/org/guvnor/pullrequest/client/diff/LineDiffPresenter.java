@@ -28,7 +28,8 @@ public class LineDiffPresenter {
 
         void setLine( LineType lineType,
                       String line,
-                      long lineNumber );
+                      long lineNumberA,
+                      long lineNumberB );
     }
 
     private final View view;
@@ -39,7 +40,8 @@ public class LineDiffPresenter {
     }
 
     public void setLine( String line,
-                         long lineNumber ) {
+                         long lineNumberA,
+                         long lineNumberB ) {
         LineType type = LineType.NONE;
         if ( line.trim().startsWith( "+" ) ) {
             type = LineType.ADD;
@@ -47,8 +49,7 @@ public class LineDiffPresenter {
         if ( line.trim().startsWith( "-" ) ) {
             type = LineType.REMOVE;
         }
-
-        this.view.setLine( type, line, lineNumber );
+        this.view.setLine( type, line, lineNumberA, lineNumberB );
     }
 
     public View getView() {

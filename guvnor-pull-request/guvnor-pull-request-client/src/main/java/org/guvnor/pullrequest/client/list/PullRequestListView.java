@@ -58,6 +58,8 @@ import org.guvnor.pullrequest.client.item.PullRequestItemPresenter;
 import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
+import org.gwtbootstrap3.client.ui.Pagination;
+import org.gwtbootstrap3.client.ui.constants.PaginationSize;
 import org.gwtbootstrap3.client.ui.html.Span;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -75,8 +77,9 @@ public class PullRequestListView extends Composite implements PullRequestListPre
     @DataField("pull-requests-list")
     private LinkedGroup pullRequests;
 
-//    @DataField("paginator")c
-//    private Element paginator = DOM.createElement( "ul" );
+    @Inject
+    @DataField("pagination")
+    private Pagination pagination;
 
     @Inject
     @DataField("open-link")
@@ -109,6 +112,11 @@ public class PullRequestListView extends Composite implements PullRequestListPre
     public void initialize() {
         setOpenLinkString();
         pullRequests.clear();
+
+        this.pagination.setPaginationSize( PaginationSize.LARGE );
+        this.pagination.addPreviousLink();
+        this.pagination.addNextLink();
+        this.pagination.setVisible( true );
     }
 
     @Override

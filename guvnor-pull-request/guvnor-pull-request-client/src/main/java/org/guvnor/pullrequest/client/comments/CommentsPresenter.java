@@ -35,6 +35,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.rpc.SessionInfo;
 import org.uberfire.workbench.events.NotificationEvent;
 
 /**
@@ -49,6 +50,7 @@ public class CommentsPresenter {
     private final Event<StatusChanged> mergeEvent;
     private final PlaceManager placeManager;
     private final TranslationService translationService;
+    private final SessionInfo sessionInfo;
     private String repository;
     private long id;
 
@@ -78,7 +80,8 @@ public class CommentsPresenter {
                               ManagedInstance<CommentPresenter> commentPresenters,
                               Event<NotificationEvent> notificationManager,
                               Event<StatusChanged> mergeEvent,
-                              PlaceManager placeManager ) {
+                              PlaceManager placeManager,
+                              SessionInfo sessionInfo ) {
         this.view = view;
         this.pullRequestService = pullRequestService;
         this.commentPresenters = commentPresenters;
@@ -86,6 +89,7 @@ public class CommentsPresenter {
         this.placeManager = placeManager;
         this.translationService = translationService;
         this.mergeEvent = mergeEvent;
+        this.sessionInfo = sessionInfo;
     }
 
     @PostConstruct
@@ -100,16 +104,15 @@ public class CommentsPresenter {
         this.refresh();
     }
 
-    public void comment( final String author,
-                         final String content ) {
+    public void comment( final String content ) {
 
-        this.comment( author, content, o -> this.refresh() );
+        this.comment( content, o -> this.refresh() );
     }
 
-    public void merge( final String author ) {
+    public void merge() {
 
         final String content = "Merged";
-        this.comment( author, content, o -> {
+        this.comment( content, o -> {
             pullRequestService.call( ( PullRequest pr ) -> {
                 this.pullRequestService.call( accepted -> {
                     this.refresh();
@@ -120,9 +123,9 @@ public class CommentsPresenter {
 
     }
 
-    public void close( final String author ) {
+    public void close() {
         final String content = "Closed";
-        this.comment( author, content, o -> {
+        this.comment( content, o -> {
             pullRequestService.call( ( PullRequest pr ) -> {
                 this.pullRequestService.call( accepted -> {
                     this.refresh();
@@ -146,9 +149,11 @@ public class CommentsPresenter {
         }
     }
 
-    public void comment( final String author,
-                         final String content,
+    public void comment( final String content,
                          final RemoteCallback<?> callback ) {
+
+        String author = this.getUserName();
+
         if ( isEmpty( content ) ) {
             notificationManager.fire( new NotificationEvent( translationService.format( Constants.PULL_REQUEST_COMMENTS_EMPTY_CONTENT ),
                                                              NotificationEvent.NotificationType.ERROR ) );
@@ -185,5 +190,13 @@ public class CommentsPresenter {
 
     public View getView() {
         return this.view;
+    }
+
+    protected String getUserName() {
+        try {
+            return this.sessionInfo.getIdentity().getIdentifier();
+        } catch ( final Exception e ) {
+            return "system";
+        }
     }
 }

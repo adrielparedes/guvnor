@@ -16,6 +16,9 @@
 
 package org.guvnor.pullrequest.client.diff;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.junit.Before;
@@ -25,8 +28,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.commons.data.Pair;
 import org.uberfire.mocks.CallerMock;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,7 +58,7 @@ public class FileDiffPresenterTest {
     public void setUp() {
         vfsService = new CallerMock<>( service );
         when( linesPresenters.get() ).thenReturn( mock( LineDiffPresenter.class ) );
-        this.presenter = new FileDiffPresenter( view, vfsService, placeManager, linesPresenters );
+        this.presenter = spy( new FileDiffPresenter( view, vfsService, placeManager, linesPresenters ) );
     }
 
     @Test
@@ -72,6 +77,49 @@ public class FileDiffPresenterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testOpenFileEmptyUri() throws Exception {
         this.presenter.openFile( "master", "" );
+    }
+
+    @Test
+    public void testLineIsNotVisible() {
+
+        boolean isVisible = this.presenter.isVisibleLine( "+++ hello" );
+        assertFalse( isVisible );
+
+        isVisible = this.presenter.isVisibleLine( "--- hello" );
+        assertFalse( isVisible );
+
+        isVisible = this.presenter.isVisibleLine( "@@ hello @@" );
+        assertFalse( isVisible );
+
+        isVisible = this.presenter.isVisibleLine( "diff --git something" );
+        assertFalse( isVisible );
+
+        isVisible = this.presenter.isVisibleLine( "index and something else" );
+        assertFalse( isVisible );
+    }
+
+    @Test
+    public void testLineIsVisible() {
+        boolean isVisible = this.presenter.isVisibleLine( "+hello" );
+        assertTrue( isVisible );
+    }
+
+    @Test
+    public void testIncrementLineNumber() {
+
+        final List<String> lines = Arrays.asList( "+line", "-line", "the same", "+line" );
+        Pair<Integer, Integer> lineNumber = this.presenter.incrementLineNumber( new Pair<>( 1, 1 ), lines.get( 0 ) );
+        assertEquals( new Pair<>( 1, 2 ), lineNumber );
+
+        lineNumber = this.presenter.incrementLineNumber( lineNumber, lines.get( 1 ) );
+        assertEquals( new Pair<>( 2, 2 ), lineNumber );
+
+        lineNumber = this.presenter.incrementLineNumber( lineNumber, lines.get( 2 ) );
+        assertEquals( new Pair<>( 3, 3 ), lineNumber );
+
+        lineNumber = this.presenter.incrementLineNumber( lineNumber, lines.get( 3 ) );
+        assertEquals( new Pair<>( 3, 4 ), lineNumber );
+
     }
 
 }

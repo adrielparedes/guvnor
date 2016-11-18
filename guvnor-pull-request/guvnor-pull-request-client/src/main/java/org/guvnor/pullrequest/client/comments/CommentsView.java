@@ -109,22 +109,19 @@ public class CommentsView extends Composite implements CommentsPresenter.View {
 
     @EventHandler("comment-button")
     public void handleCommentClick( final ClickEvent click ) {
-        String author = "adrielparedes";
         String content = this.content.getText();
-        this.presenter.comment( author, content );
+        this.presenter.comment( content );
         this.content.setText( "" );
     }
 
     @EventHandler("merge-button")
     public void handleMergeClick( final ClickEvent click ) {
-        String author = "adrielparedes";
-        this.presenter.merge( author );
+        this.presenter.merge();
     }
 
     @EventHandler("close-button")
     public void handleCloseClick( final ClickEvent click ) {
-        String author = "adrielparedes";
-        this.presenter.close( author );
+        this.presenter.close();
     }
 
 }
