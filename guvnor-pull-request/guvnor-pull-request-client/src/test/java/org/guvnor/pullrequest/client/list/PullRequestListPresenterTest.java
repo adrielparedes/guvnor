@@ -95,7 +95,7 @@ public class PullRequestListPresenterTest {
             serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-" + i );
         }
         presenter.calculatePaginatorSize();
-        verify( view ).setPaginator( 2 );
+        verify( view ).setPageCount( 2 );
 
     }
 
@@ -105,7 +105,7 @@ public class PullRequestListPresenterTest {
             serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-" + i );
         }
         presenter.showClosedPullRequests();
-        verify( view, times( 2 ) ).setPaginator( 0 );
+        verify( view, times( 2 ) ).setPageCount( 0 );
     }
 
     @Test
@@ -120,7 +120,7 @@ public class PullRequestListPresenterTest {
 
         }
         presenter.showClosedPullRequests();
-        verify( view ).setPaginator( 2 );
+        verify( view ).setPageCount( 2 );
     }
 
 }

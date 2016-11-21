@@ -95,7 +95,7 @@ public class PullRequestListPresenter {
 
         void clear();
 
-        void setPaginator( int i );
+        void setPageCount( int i );
     }
 
     @Inject
@@ -114,7 +114,7 @@ public class PullRequestListPresenter {
 
         this.repository = "target";
         this.negated = false;
-        this.selectedPage = 0;
+        this.selectedPage = 1;
         this.view.init( this );
         this.refresh();
     }
@@ -141,7 +141,7 @@ public class PullRequestListPresenter {
                 .call( prs -> {
                     showPullRequests( (List<PullRequest>) prs );
                 } )
-                .getPullRequestsByStatus( this.selectedPage, pageSize, repository, status, negated );
+                .getPullRequestsByStatus( this.selectedPage - 1, pageSize, repository, status, negated );
     }
 
     protected void showPullRequests( final List<PullRequest> prs ) {
@@ -172,8 +172,12 @@ public class PullRequestListPresenter {
 
     public void calculatePaginatorSize() {
         pullRequestService.call( ( Long size ) -> {
-            view.setPaginator( (int) ( size + pageSize - 1 ) / pageSize );
+            view.setPageCount( (int) ( size + pageSize - 1 ) / pageSize );
         } ).numberOfPullRequestsByStatus( repository, PullRequestStatus.OPEN, negated );
+    }
+
+    public void selectPage( int page ) {
+        this.selectedPage = page;
     }
 
     public void onStatusChange( @Observes final StatusChanged statusChanged ) {

@@ -55,10 +55,10 @@ import javax.inject.Inject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import org.guvnor.pullrequest.client.item.PullRequestItemPresenter;
+import org.guvnor.pullrequest.client.pagination.SimplePagination;
 import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.LinkedGroup;
-import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.PaginationSize;
 import org.gwtbootstrap3.client.ui.html.Span;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
@@ -79,7 +79,7 @@ public class PullRequestListView extends Composite implements PullRequestListPre
 
     @Inject
     @DataField("pagination")
-    private Pagination pagination;
+    private SimplePagination pagination;
 
     @Inject
     @DataField("open-link")
@@ -113,10 +113,14 @@ public class PullRequestListView extends Composite implements PullRequestListPre
         setOpenLinkString();
         pullRequests.clear();
 
+        this.pagination.setPageCount( 1 );
         this.pagination.setPaginationSize( PaginationSize.LARGE );
-        this.pagination.addPreviousLink();
-        this.pagination.addNextLink();
         this.pagination.setVisible( true );
+        this.pagination.setPageHandler( ( pageNumber ) -> {
+                                            presenter.selectPage( pageNumber );
+                                            presenter.refresh();
+                                        }
+        );
     }
 
     @Override
@@ -140,8 +144,9 @@ public class PullRequestListView extends Composite implements PullRequestListPre
     }
 
     @Override
-    public void setPaginator( final int i ) {
-//        paginator.insertFirst( DOM.createElement( "" ) );
+    public void setPageCount( final int pageCount ) {
+        pagination.setPageCount( pageCount );
+        pagination.rebuild();
     }
 
     @EventHandler("open-link")
