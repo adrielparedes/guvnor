@@ -22,11 +22,11 @@
     border: 2px solid #cc0000;
 }
 
-.list-view-pf.list-view-pf-description.list-group-item-heading {
+.list-view-pf .list-view-pf-description .list-group-item-heading {
     width: calc(75% - 20px) !important;
 }
 
-.list-view-pf.list-view-pf-description.list-group-item-text {
+.list-view-pf .list-view-pf-description .list-group-item-text {
     width: calc(25% - 40px) !important;
 }
 
