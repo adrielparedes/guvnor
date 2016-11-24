@@ -57,6 +57,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.pullrequest.client.events.StatusChanged;
 import org.guvnor.pullrequest.client.item.PullRequestItemPresenter;
+import org.guvnor.pullrequest.client.pagination.SimplePaginationPresenter;
 import org.guvnor.pullrequest.client.resources.i18n.Constants;
 import org.guvnor.structure.repositories.PullRequest;
 import org.guvnor.structure.repositories.PullRequestService;
@@ -74,6 +75,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 public class PullRequestListPresenter {
 
     private final TranslationService translationService;
+    private final SimplePaginationPresenter paginationPresenter;
     private View view;
     final int pageSize = 10;
 
@@ -81,7 +83,6 @@ public class PullRequestListPresenter {
     private Caller<PullRequestService> pullRequestService;
     private boolean negated;
     private String repository;
-    private Integer selectedPage;
 
     public interface View extends IsWidget {
 
@@ -95,18 +96,20 @@ public class PullRequestListPresenter {
 
         void clear();
 
-        void setPageCount( int i );
+        void addPagination( SimplePaginationPresenter.View view );
     }
 
     @Inject
     public PullRequestListPresenter( final PullRequestListPresenter.View view,
                                      final ManagedInstance<PullRequestItemPresenter> itemPresenters,
                                      final TranslationService translationService,
-                                     final Caller<PullRequestService> pullRequestService ) {
+                                     final Caller<PullRequestService> pullRequestService,
+                                     final SimplePaginationPresenter paginationPresenter ) {
         this.view = view;
         this.itemPresenters = itemPresenters;
         this.pullRequestService = pullRequestService;
         this.translationService = translationService;
+        this.paginationPresenter = paginationPresenter;
     }
 
     @PostConstruct
@@ -114,8 +117,12 @@ public class PullRequestListPresenter {
 
         this.repository = "target";
         this.negated = false;
-        this.selectedPage = 1;
         this.view.init( this );
+
+        this.paginationPresenter.setPageSize( this.pageSize );
+        this.paginationPresenter.setClickHandler( page -> this.refresh() );
+        paginationPresenter.selectPage( 1 );
+        this.view.addPagination( paginationPresenter.getView() );
         this.refresh();
     }
 
@@ -125,6 +132,7 @@ public class PullRequestListPresenter {
         refreshPullRequestsCount( repository, PullRequestStatus.OPEN, false, view::setNumberOfOpenPullRequests );
         refreshPullRequestsCount( repository, PullRequestStatus.OPEN, true, view::setNumberOfClosedPullRequests );
         refreshPullRequestsByStatus( PullRequestStatus.OPEN, repository, this.negated );
+        this.paginationPresenter.refresh();
     }
 
     private void refreshPullRequestsCount( final String repository,
@@ -141,7 +149,7 @@ public class PullRequestListPresenter {
                 .call( prs -> {
                     showPullRequests( (List<PullRequest>) prs );
                 } )
-                .getPullRequestsByStatus( this.selectedPage - 1, pageSize, repository, status, negated );
+                .getPullRequestsByStatus( (int) ( this.paginationPresenter.getSelectedPage() - 1 ), pageSize, repository, status, negated );
     }
 
     protected void showPullRequests( final List<PullRequest> prs ) {
@@ -172,12 +180,8 @@ public class PullRequestListPresenter {
 
     public void calculatePaginatorSize() {
         pullRequestService.call( ( Long size ) -> {
-            view.setPageCount( (int) ( size + pageSize - 1 ) / pageSize );
+            this.paginationPresenter.setItemsCount( size );
         } ).numberOfPullRequestsByStatus( repository, PullRequestStatus.OPEN, negated );
-    }
-
-    public void selectPage( int page ) {
-        this.selectedPage = page;
     }
 
     public void onStatusChange( @Observes final StatusChanged statusChanged ) {
