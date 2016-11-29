@@ -98,7 +98,7 @@ public class PullRequestListPresenterTest {
         for ( int i = 0; i < 11; i++ ) {
             serviceMock.createPullRequest( "source", "a", "target", "b", "kie", "PR-" + i );
         }
-        presenter.calculatePaginatorSize();
+        presenter.calculatePaginationSize();
 //        verify( view ).refreshPagination( 1, 2 );
 
     }

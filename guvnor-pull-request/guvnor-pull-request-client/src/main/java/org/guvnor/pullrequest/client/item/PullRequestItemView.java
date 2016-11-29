@@ -47,6 +47,10 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+/**
+ * Represents a Pull Request Item view. It shows the status of the pull request (blue if it is open, or red if it is not).
+ * It also show the title and the days the PR it has been open.
+ */
 @Dependent
 @Templated
 public class PullRequestItemView extends Composite implements PullRequestItemPresenter.View {

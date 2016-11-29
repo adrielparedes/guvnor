@@ -29,6 +29,10 @@ import org.gwtbootstrap3.client.ui.html.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+/**
+ * Represents the a single comment view. It shows the author name, the title and the content. It also has the
+ * comment date.
+ */
 @Dependent
 @Templated
 public class CommentView extends Composite implements CommentPresenter.View {

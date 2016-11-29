@@ -23,6 +23,9 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.structure.repositories.Comment;
 
+/**
+ * It contains the behaviour for a single {@link CommentView}.
+ */
 @Dependent
 public class CommentPresenter {
 

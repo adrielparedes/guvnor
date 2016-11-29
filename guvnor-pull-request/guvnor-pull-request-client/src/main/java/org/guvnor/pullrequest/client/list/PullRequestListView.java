@@ -65,6 +65,10 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+/**
+ * Represents the pull requests list view.
+ * All the Pull Requests that are open or closed are shown in this view.
+ */
 @Templated
 @Dependent
 public class PullRequestListView extends Composite implements PullRequestListPresenter.View {

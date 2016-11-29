@@ -25,16 +25,17 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.pullrequest.client.utils.Places;
 import org.guvnor.structure.repositories.PullRequest;
-import org.guvnor.structure.repositories.PullRequestService;
-import org.jboss.errai.common.client.api.Caller;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+/**
+ * Represents the behaviour of Pull Request Item that goes into {@link org.guvnor.pullrequest.client.list.PullRequestListPresenter}.
+ * It create the item, calculate the days ago it was created, and the link to the
+ * {@link org.guvnor.pullrequest.client.description.PullRequestDescriptionPresenter}
+ */
 @Dependent
 public class PullRequestItemPresenter {
-
-    private final Caller<PullRequestService> pullRequestService;
 
     public interface View extends IsWidget {
 
@@ -72,11 +73,9 @@ public class PullRequestItemPresenter {
 
     @Inject
     public PullRequestItemPresenter( final View view,
-                                     PlaceManager placeManager,
-                                     Caller<PullRequestService> pullRequestService ) {
+                                     PlaceManager placeManager ) {
         this.view = view;
         this.placeManager = placeManager;
-        this.pullRequestService = pullRequestService;
 
     }
 

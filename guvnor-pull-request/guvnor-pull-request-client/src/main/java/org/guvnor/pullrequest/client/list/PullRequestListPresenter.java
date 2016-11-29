@@ -70,6 +70,10 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 
+/**
+ * {@link PullRequestListView} presenter. It containts the behaviour of the view and the list of items it has.
+ * See {@link PullRequestItemPresenter}
+ */
 @ApplicationScoped
 @WorkbenchScreen(identifier = "PullRequestList")
 public class PullRequestListPresenter {
@@ -128,7 +132,7 @@ public class PullRequestListPresenter {
 
     public void refresh() {
         this.view.clear();
-        this.calculatePaginatorSize();
+        this.calculatePaginationSize();
         refreshPullRequestsCount( repository, PullRequestStatus.OPEN, false, view::setNumberOfOpenPullRequests );
         refreshPullRequestsCount( repository, PullRequestStatus.OPEN, true, view::setNumberOfClosedPullRequests );
         refreshPullRequestsByStatus( PullRequestStatus.OPEN, repository, this.negated );
@@ -159,6 +163,9 @@ public class PullRequestListPresenter {
         } );
     }
 
+    /**
+     * Mock method, this object should be created when a pull request is needed, but not in this presenter.
+     */
     public void createPullRequest() {
         pullRequestService.call( ( pr ) -> {
             refresh();
@@ -176,7 +183,7 @@ public class PullRequestListPresenter {
         this.refresh();
     }
 
-    public void calculatePaginatorSize() {
+    public void calculatePaginationSize() {
         pullRequestService.call( ( Long size ) -> {
             this.paginationPresenter.setItemsCount( size );
             this.paginationPresenter.refresh();

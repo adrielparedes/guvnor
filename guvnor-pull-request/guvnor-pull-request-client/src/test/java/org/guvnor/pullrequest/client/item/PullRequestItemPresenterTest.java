@@ -19,8 +19,6 @@ package org.guvnor.pullrequest.client.item;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.guvnor.structure.repositories.PullRequestService;
-import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.logging.util.StringFormat;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,14 +38,11 @@ public class PullRequestItemPresenterTest {
     @Mock
     private PlaceManager placeManager;
 
-    @Mock
-    private Caller<PullRequestService> pullRequestService;
-
     private PullRequestItemPresenter presenter;
 
     @Before
     public void setUp() {
-        presenter = new PullRequestItemPresenter( view, placeManager, pullRequestService );
+        presenter = new PullRequestItemPresenter( view, placeManager );
     }
 
     @Test
