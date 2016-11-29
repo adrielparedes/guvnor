@@ -34,6 +34,10 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+/**
+ * Shows main information about PR. The title, the ID, days open, author, status are part of
+ * the information this view contains. It also has the Tabs for Diff and Comments.
+ */
 @Dependent
 @Templated
 public class PullRequestDescriptionView extends Composite implements PullRequestDescriptionPresenter.View {

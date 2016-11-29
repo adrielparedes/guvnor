@@ -35,6 +35,10 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 
+/**
+ * Contains behavior to help the {@link PullRequestDescriptionView} to show information about PR
+ * It also create presenters for Diff and Comments.
+ */
 @ApplicationScoped
 @WorkbenchScreen(identifier = "PullRequestDescription")
 public class PullRequestDescriptionPresenter {

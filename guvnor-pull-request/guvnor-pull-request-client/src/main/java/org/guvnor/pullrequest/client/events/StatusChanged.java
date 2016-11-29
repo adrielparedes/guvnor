@@ -18,6 +18,9 @@ package org.guvnor.pullrequest.client.events;
 
 import org.guvnor.structure.repositories.PullRequestStatus;
 
+/**
+ * Represents a pull requests status change. I.E.: Merged or Closed.
+ */
 public class StatusChanged {
 
     private final PullRequestStatus status;

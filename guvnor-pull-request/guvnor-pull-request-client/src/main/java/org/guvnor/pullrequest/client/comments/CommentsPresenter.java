@@ -39,7 +39,8 @@ import org.uberfire.rpc.SessionInfo;
 import org.uberfire.workbench.events.NotificationEvent;
 
 /**
- * Represents the list of comments for a Pull Request.
+ * Represents the list of comments for a Pull Request. It check if the PR is open or not to enable or
+ * disable action buttons, and show all the comment that PR has.
  */
 @Dependent
 public class CommentsPresenter {
