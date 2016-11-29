@@ -32,6 +32,11 @@ import org.uberfire.commons.data.Pair;
 
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
+/**
+ * This Presenter take the {@link PortableFileDiff}, analyze every line and create a line representation
+ * for the view. This way it can show if it is an addition, removal, or normal line into the view. It also
+ * removes dispensable information.
+ */
 @Dependent
 public class FileDiffPresenter {
 

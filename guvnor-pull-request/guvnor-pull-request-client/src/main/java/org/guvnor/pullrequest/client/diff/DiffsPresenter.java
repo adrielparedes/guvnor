@@ -27,6 +27,10 @@ import org.guvnor.structure.repositories.PullRequestService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 
+/**
+ * This Presenter retrieve all the FileDiffs and create the
+ * FileDiffPresenters for those elements.
+ */
 @Dependent
 public class DiffsPresenter {
 

@@ -21,6 +21,10 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
+/**
+ * Presenter of a single diff line. If the line starts with a + it creates a ADD Line View.
+ * If it stars with - it reates a REMOVE Line View, otherwise it creates a NONE Line View.
+ */
 @Dependent
 public class LineDiffPresenter {
 

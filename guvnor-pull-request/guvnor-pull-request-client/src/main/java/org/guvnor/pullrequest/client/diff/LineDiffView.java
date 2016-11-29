@@ -24,6 +24,9 @@ import org.gwtbootstrap3.client.ui.html.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+/**
+ * Represents a single diff line and its background is green if ADD, red if REMOVE, and transparent if NONE.
+ */
 @Dependent
 @Templated
 public class LineDiffView extends Composite implements LineDiffPresenter.View {
