@@ -20,7 +20,6 @@ import java.util.Date;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.structure.repositories.Comment;
 
@@ -31,7 +30,7 @@ public class CommentPresenter {
 
         void setAuthor( String author );
 
-        void setDate( String date );
+        void setDate( Date date );
 
         void setContent( String content );
     }
@@ -46,15 +45,8 @@ public class CommentPresenter {
     public void initialize( final Comment comment ) {
 
         view.setAuthor( comment.getAuthor() );
-        view.setDate( getDate( comment ) );
+        view.setDate( comment.getDate() );
         view.setContent( comment.getContent() );
-    }
-
-    private String getDate( final Comment comment ) {
-        final DateTimeFormat format = DateTimeFormat.getFormat( "MM/dd/yyyy HH:mm:ss" );
-        final Date date = comment.getDate();
-        return format.format( date );
-
     }
 
     public View getView() {

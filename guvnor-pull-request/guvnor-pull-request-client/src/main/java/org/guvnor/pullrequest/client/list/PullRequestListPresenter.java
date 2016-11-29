@@ -146,9 +146,7 @@ public class PullRequestListPresenter {
                                               final String repository,
                                               final boolean negated ) {
         pullRequestService
-                .call( prs -> {
-                    showPullRequests( (List<PullRequest>) prs );
-                } )
+                .call( prs -> showPullRequests( (List<PullRequest>) prs ) )
                 .getPullRequestsByStatus( (int) ( this.paginationPresenter.getSelectedPage() - 1 ), pageSize, repository, status, negated );
     }
 
@@ -181,6 +179,7 @@ public class PullRequestListPresenter {
     public void calculatePaginatorSize() {
         pullRequestService.call( ( Long size ) -> {
             this.paginationPresenter.setItemsCount( size );
+            this.paginationPresenter.refresh();
         } ).numberOfPullRequestsByStatus( repository, PullRequestStatus.OPEN, negated );
     }
 

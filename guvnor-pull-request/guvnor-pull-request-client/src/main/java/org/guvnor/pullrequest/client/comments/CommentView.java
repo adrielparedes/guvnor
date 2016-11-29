@@ -16,10 +16,12 @@
 
 package org.guvnor.pullrequest.client.comments;
 
+import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import org.guvnor.pullrequest.client.resources.PullRequestResources;
@@ -46,6 +48,7 @@ public class CommentView extends Composite implements CommentPresenter.View {
     @Inject
     @DataField("avatar")
     private Image avatar;
+    private DateTimeFormat timeFormat;
 
     @PostConstruct
     public void initialize() {
@@ -53,6 +56,7 @@ public class CommentView extends Composite implements CommentPresenter.View {
         avatar.addStyleName( "avatar media-object" );
         avatar.setWidth( "70px" );
         avatar.setHeight( "70px" );
+        timeFormat = DateTimeFormat.getFormat( "MM/dd/yyyy HH:mm:ss" );
     }
 
     @Override
@@ -61,8 +65,8 @@ public class CommentView extends Composite implements CommentPresenter.View {
     }
 
     @Override
-    public void setDate( final String date ) {
-        this.date.setText( date );
+    public void setDate( final Date date ) {
+        this.date.setText( timeFormat.format( date ) );
     }
 
     @Override
