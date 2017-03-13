@@ -37,6 +37,7 @@ import org.guvnor.m2repo.model.JarListPageRequest;
 import org.guvnor.m2repo.model.JarListPageRow;
 import org.guvnor.m2repo.service.M2RepoService;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.uberfire.backend.server.cdi.workspace.WorkspaceScoped;
 import org.uberfire.paging.PageResponse;
 
 @Service
