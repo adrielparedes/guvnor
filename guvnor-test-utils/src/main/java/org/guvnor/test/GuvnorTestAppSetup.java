@@ -22,7 +22,7 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
-import org.uberfire.ext.metadata.backend.lucene.LuceneConfig;
+import org.uberfire.ext.metadata.MetadataConfig;
 import org.uberfire.io.IOService;
 import org.uberfire.io.impl.IOServiceDotFileImpl;
 import org.uberfire.rpc.SessionInfo;
@@ -51,8 +51,8 @@ public class GuvnorTestAppSetup {
 
     @Produces
     @Named("luceneConfig")
-    public LuceneConfig luceneConfig() {
-        return mock(LuceneConfig.class);
+    public MetadataConfig luceneConfig() {
+        return mock(MetadataConfig.class);
     }
 
     public static void reset() {

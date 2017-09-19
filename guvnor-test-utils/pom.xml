@@ -86,7 +86,7 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-metadata-backend-lucene</artifactId>
+      <artifactId>uberfire-metadata-backend-hibernate</artifactId>
     </dependency>
 
     <dependency>
